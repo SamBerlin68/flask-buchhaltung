@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}Buchung bearbeiten{% endblock %}
+
+{% block content %}
+<h1 class="h5">Buchung bearbeiten</h1>
+
+<form method="post" class="row g-3">
+
+  <div class="col-md-3">
+    <label class="form-label">Datum</label>
+    <input type="date" name="datum" class="form-control" value="{{ buchung.datum }}" required>
+  </div>
+
+  <div class="col-md-6">
+    <label class="form-label">Empfänger / Text</label>
+    <input type="text" name="empfaenger" class="form-control" value="{{ buchung.empfaenger }}">
+  </div>
+
+  <div class="col-md-6">
+    <label class="form-label">Verwendungszweck</label>
+    <input type="text" name="verwendungszweck" class="form-control" value="{{ buchung.verwendungszweck }}">
+  </div>
+
+  <div class="col-md-4">
+    <label class="form-label">Konto</label>
+    <select id="konto_id" name="konto_id" class="form-select">
+      {% for k in konten %}
+        <option value="{{ k.id }}" data-typ="{{ k.typ }}" {% if k.id == buchung.konto_id %}selected{% endif %}>
+          {{ k.name }}
+        </option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="col-md-2">
+    <label class="form-label">Netto</label>
+    <input id="betrag_netto" type="number" step="0.01" name="betrag_netto" class="form-control"
+       value="{{ '%.2f'|format(buchung.betrag_netto) }}"
+       {% if buchung.konto_name == 'Umsatzsteuer/Vorsteuer' %}readonly{% endif %}>
+  </div>
+
+  <div class="col-md-2">
+  <label class="form-label">Steuer</label>
+  <input id="steuerbetrag" type="number" step="0.01" name="steuerbetrag" class="form-control"
+         value="{{ '%.2f'|format(buchung.steuerbetrag) }}" {% if buchung.konto_name != 'Umsatzsteuer/Vorsteuer' %}readonly{% endif %}>
+</div>
+
+  <div class="col-md-2">
+    <label class="form-label">Steuersatz</label>
+    <select id="steuersatz" name="steuersatz" class="form-select"
+          {% if buchung.konto_name == 'Umsatzsteuer/Vorsteuer' %}disabled{% endif %}>
+        <option value="0" {% if buchung.steuersatz == 0 %}selected{% endif %}>0 %</option>
+        <option value="7" {% if buchung.steuersatz == 7 %}selected{% endif %}>7 %</option>
+        <option value="19" {% if buchung.steuersatz == 19 %}selected{% endif %}>19 %</option>
+  </select>
+  </div>
+<div id="steuer-hinweis" class="alert alert-info d-none">
+  Bei Steuerbuchungen wird nur der Steuerbetrag erfasst. Netto ist immer 0,00 €.
+</div>
+  <div class="col-md-4">
+    <label class="form-label">Belegnummer</label>
+    <input type="text" name="belegnummer" class="form-control" value="{{ buchung.belegnummer }}">
+  </div>
+
+  <div class="col-12">
+    <button class="btn btn-primary">Speichern</button>
+    <a href="{{ url_for('buchungen_liste') }}" class="btn btn-secondary">Abbrechen</a>
+  </div>
+
+</form>
+
+<script>
+function toggleFields() {
+  const select = document.getElementById("konto_id");
+  const option = select.options[select.selectedIndex];
+
+  const typ = option.dataset.typ;
+
+  const netto = document.getElementById("betrag_netto");
+  const steuer = document.getElementById("steuerbetrag");
+  const steuersatz = document.getElementById("steuersatz");
+  const hint = document.getElementById("steuer-hinweis");
+
+  const isSteuerkonto = (typ === "neutral" && option.text.includes("Umsatzsteuer"));
+
+  hint.classList.toggle("d-none", !isSteuerkonto);
+
+  if (isSteuerkonto) {
+    netto.value = "0.00";
+    netto.readOnly = true;
+
+    steuersatz.value = "0";
+    steuersatz.disabled = true;
+
+    steuer.readOnly = false;
+  } else {
+    netto.readOnly = false;
+    steuersatz.disabled = false;
+    steuer.readOnly = true;
+  }
+}
+
+document.getElementById("konto_id").addEventListener("change", toggleFields);
+window.addEventListener("load", toggleFields);
+</script>
+
+
+{% endblock %}

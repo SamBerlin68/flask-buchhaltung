@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <title>{% block title %}Meine App{% endblock %}</title>
+
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class'
+    };
+  </script>
+
+  <style>
+    .dark-toggle {
+      background: #1f2937;
+      color: white;
+      padding: 0.5rem 0.75rem;
+      border-radius: 0.375rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300">
+
+  <!-- ✅ Responsive Navbar -->
+  <header class="bg-white dark:bg-gray-800 shadow">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+      <div class="text-lg font-bold text-gray-800 dark:text-white">📁 Meine App</div>
+
+      <!-- Burger Button (mobil) -->
+      <button class="sm:hidden text-gray-700 dark:text-gray-200" id="menu-toggle">
+        ☰
+      </button>
+
+      <!-- Menü -->
+      <nav id="nav-links" class="hidden sm:flex flex-col sm:flex-row sm:items-center gap-4 text-sm font-medium text-gray-800 dark:text-gray-100">
+        <a href="{{ url_for('dashboard') }}" class="hover:underline">🏠 Dashboard</a>
+        <a href="{{ url_for('upload') }}" class="hover:underline">📤 Upload</a>
+        <a href="{{ url_for('transactions') }}" class="hover:underline">📄 Transaktionen</a>
+        <a href="{{ url_for('zuordnen') }}" class="hover:underline">🧾 Zuordnen</a>
+        <a href="{{ url_for('regeln') }}" class="hover:underline">⚙️ Regeln</a>
+        <a href="{{ url_for('konten') }}" class="hover:underline">🏦 Konten</a>
+        <a href="{{ url_for('logout') }}" class="text-red-600 dark:text-red-400 hover:underline">🚪 Logout</a>
+        <button class="dark-toggle ml-2 sm:ml-4" onclick="toggleDark()">🌙</button>
+      </nav>
+    </div>
+
+    <!-- Mobilmenü (ausklappbar) -->
+    <div id="mobile-menu" class="sm:hidden hidden px-6 pb-4">
+      <nav class="flex flex-col gap-2 text-sm font-medium text-gray-800 dark:text-gray-100">
+        <a href="{{ url_for('dashboard') }}" class="hover:underline">🏠 Dashboard</a>
+        <a href="{{ url_for('upload') }}" class="hover:underline">📤 Upload</a>
+        <a href="{{ url_for('transactions') }}" class="hover:underline">📄 Transaktionen</a>
+        <a href="{{ url_for('zuordnen') }}" class="hover:underline">🧾 Zuordnen</a>
+        <a href="{{ url_for('regeln') }}" class="hover:underline">⚙️ Regeln</a>
+        <a href="{{ url_for('konten') }}" class="hover:underline">🏦 Konten</a>
+        <a href="{{ url_for('logout') }}" class="text-red-600 dark:text-red-400 hover:underline">🚪 Logout</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Inhalt -->
+  <main class="max-w-5xl mx-auto px-6 py-8">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Scripts -->
+  <script>
+    // Dark Mode
+    const saved = localStorage.getItem("darkmode");
+    if (saved === "true") document.body.classList.add("dark");
+
+    function toggleDark() {
+      document.body.classList.toggle("dark");
+      localStorage.setItem("darkmode", document.body.classList.contains("dark"));
+    }
+
+    // Burger Menü
+    const menuToggle = document.getElementById("menu-toggle");
+    const mobileMenu = document.getElementById("mobile-menu");
+
+    menuToggle?.addEventListener("click", () => {
+      mobileMenu.classList.toggle("hidden");
+    });
+  </script>
+</body>
+</html>

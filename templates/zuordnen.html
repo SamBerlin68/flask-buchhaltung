@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% block title %}Zuordnen{% endblock %}
+{% block content %}
+<h1 class="h5">Unverarbeitete Transaktionen</h1>
+
+<table class="table table-sm table-striped align-middle">
+  <thead>
+    <tr>
+      <th>Datum</th>
+      <th>Empfänger</th>
+      <th>Verwendungszweck</th>
+      <th class="text-end">Brutto</th>
+      <th style="width: 22rem">Zuordnung</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% set vmap = (vorschlaege | default({})) %}
+    {% for t in transaktionen %}
+      {% set vs = vmap.get(t.id, {}) %}
+      <tr>
+        <td>{{ t.datum }}</td>
+        <td>{{ t.empfaenger }}</td>
+        <td class="text-wrap">{{ t.verwendungszweck }}</td>
+        <td class="text-end">{{ '%.2f'|format(t.betrag) }}</td>
+        <td>
+          <!-- FIX: fehlende Anführungsmarke am action-Attribut ergänzt -->
+          <form class="row g-2" method="post" action="{{ url_for('zuordnen') }}">
+            <div class="form-check mb-2">
+              <input class="form-check-input" type="checkbox" id="rc_{{ t.id }}" name="reverse_charge" value="1">
+              <label class="form-check-label" for="rc_{{ t.id }}">
+                Reverse-Charge (§13b) anwenden
+              </label>
+            </div>
+
+            <input type="hidden" name="trans_id" value="{{ t.id }}">
+
+            <div class="col-7">
+              <select class="form-select form-select-sm" name="konto_id" required>
+                <option value="">Konto…</option>
+                {% for k in konten %}
+                  <option value="{{ k.id }}" {% if vs.get('konto_id') == k.id %}selected{% endif %}>
+                    {{ k.name }} ({{ k.typ }})
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-12 col-md-4">
+              <label class="form-label form-label-sm mb-0" for="belegnummer_{{ t.id }}">Belegnummer</label>
+              <input class="form-control form-control-sm"
+                type="text"
+                id="belegnummer_{{ t.id }}"
+                name="belegnummer"
+                value="{{ (vorschlaege[t.id]['belegnummer'] if vorschlaege.get(t.id) else '') }}"
+                placeholder="YYYYMMDD-001">
+              <small class="text-muted">Vorschlag kann überschrieben werden.</small>
+            </div>
+
+
+            <div class="col-5">
+              <div class="input-group input-group-sm">
+                <select class="form-select form-select-sm" name="steuersatz" required>
+                  {% for opt in [0, 7, 19] %}
+                    <option value="{{ opt }}"
+                      {% if (vs.get('steuersatz', 19.0)|float) == opt %}selected{% endif %}>
+                      {{ opt }} %
+                    </option>
+                  {% endfor %}
+                </select>
+                <span class="input-group-text">%</span>
+              </div>
+            </div>
+            
+            <div class="col-12">
+              <label class="form-label form-label-sm mb-0" for="teilbetrag_{{ t.id }}">Teilbetrag (optional)</label>
+                <input class="form-control form-control-sm"
+                type="number" step="0.01" inputmode="decimal"
+                name="teilbetrag" id="teilbetrag_{{ t.id }}"
+                placeholder="z. B. 500.00">
+                <small class="text-muted">Nur diesen Betrag buchen; der Rest bleibt für eine zweite Buchung offen.</small>
+            </div>
+
+
+            <div class="col-12 d-flex align-items-center gap-2">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="1" name="regel_speichern" id="rule{{ t.id }}">
+                <label class="form-check-label" for="rule{{ t.id }}">Regel speichern</label>
+              </div>
+              <button class="btn btn-primary btn-sm ms-auto" type="submit">Buchen</button>
+            </div>
+          </form>
+        </td>
+      </tr>
+    {% else %}
+      <tr><td colspan="5" class="text-muted">Alles verbucht – keine offenen Transaktionen.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

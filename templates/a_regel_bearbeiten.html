@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Regel bearbeiten{% endblock %}
+
+{% block content %}
+<h2>Regel bearbeiten</h2>
+
+<form method="POST">
+    <label>Suchbegriff:</label><br>
+    <input name="suchbegriff" value="{{ regel.suchbegriff }}" required><br><br>
+
+    <label>Konto:</label><br>
+    <select name="konto_id">
+        {% for konto in konten %}
+        <option value="{{ konto.id }}" {% if konto.id == regel.konto_id %}selected{% endif %}>
+            {{ konto.name }} ({{ konto.typ }})
+        </option>
+        {% endfor %}
+    </select><br><br>
+
+    <label>Steuersatz:</label><br>
+<select name="steuersatz">
+    <option value="19.0" {% if regel.steuersatz == 19.0 %}selected{% endif %}>19 %</option>
+    <option value="7.0" {% if regel.steuersatz == 7.0 %}selected{% endif %}>7 %</option>
+    <option value="0.0" {% if regel.steuersatz == 0.0 %}selected{% endif %}>0 %</option>
+</select><br><br>
+
+
+    <button type="submit">💾 Speichern</button>
+    <a href="{{ url_for('regeln') }}">Abbrechen</a>
+</form>
+{% endblock %}

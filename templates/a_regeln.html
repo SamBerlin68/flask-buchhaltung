@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Regelverwaltung{% endblock %}
+
+{% block content %}
+<h2>Regeln verwalten</h2>
+
+<form method="POST">
+    <label>Suchbegriff (z. B. STRATO):</label><br>
+    <input name="suchbegriff" required><br><br>
+
+    <label>Konto:</label><br>
+    <select name="konto_id" required>
+        {% for konto in konten %}
+        <option value="{{ konto.id }}">{{ konto.name }} ({{ konto.typ }})</option>
+        {% endfor %}
+    </select><br><br>
+
+    <label>Steuersatz:</label><br>
+    <select name="steuersatz" required>
+        <option value="19.0">19 %</option>
+        <option value="7.0">7 %</option>
+        <option value="0.0">0 %</option>
+    </select><br><br>
+
+    <button type="submit">➕ Regel hinzufügen</button>
+</form>
+
+<hr>
+
+<h3>Aktive Regeln</h3>
+<table>
+    <tr>
+        <th>Suchbegriff</th>
+        <th>Konto</th>
+        <th>Steuersatz</th>
+        <th>Aktion</th>
+    </tr>
+    {% for regel in regeln %}
+    <tr>
+        <td>{{ regel.suchbegriff }}</td>
+        <td>{{ regel.konto }}</td>
+        <td>{{ regel.steuersatz }} %</td>
+        <td>
+            <form action="{{ url_for('regel_loeschen', regel_id=regel.id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Willst du diese Regel wirklich löschen?');">
+                <button type="submit" style="color: red;">🗑️</button>
+            </form>
+            <a href="{{ url_for('regel_bearbeiten', regel_id=regel.id) }}">✏️</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<p><a href="{{ url_for('dashboard') }}">Zurück zum Dashboard</a></p>
+{% endblock %}

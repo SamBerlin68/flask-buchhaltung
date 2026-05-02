@@ -1,0 +1,31 @@
+<!-- templates/regel_bearbeiten.html -->
+{% extends 'base.html' %}
+{% block title %}Regel bearbeiten{% endblock %}
+{% block content %}
+<h1 class="h5">Regel bearbeiten</h1>
+<form method="post" class="col-12 col-md-8 col-lg-6">
+<div class="mb-3">
+<label class="form-label required">Suchbegriff</label>
+<input type="text" class="form-control" name="suchbegriff" value="{{ regel.suchbegriff }}" required>
+</div>
+<div class="mb-3">
+<label class="form-label required">Konto</label>
+<select class="form-select" name="konto_id" required>
+{% for k in konten %}
+<option value="{{ k.id }}" {% if regel.konto_id==k.id %}selected{% endif %}>{{ k.name }}</option>
+{% endfor %}
+</select>
+</div>
+<div class="mb-3">
+<label class="form-label">Steuersatz (%)</label>
+<select class="form-select" name="steuersatz" required>
+    {% for opt in [0, 7, 19] %}
+      <option value="{{ opt }}"
+        {% if (regel.steuersatz|float) == opt %}selected{% endif %}>{{ opt }} %</option>
+    {% endfor %}
+</select>
+</div>
+<button class="btn btn-primary">Speichern</button>
+<a href="{{ url_for('regeln') }}" class="btn btn-link">Abbrechen</a>
+</form>
+{% endblock %}

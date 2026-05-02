@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Registrierung{% endblock %}
+
+{% block content %}
+<h2>Registrieren</h2>
+<form method="POST">
+    Benutzername: <input name="username" required><br>
+    Passwort: <input name="password" type="password" required><br>
+    Passwort wiederholen: <input name="password_confirm" type="password" required><br>
+    <button type="submit">Registrieren</button>
+</form>
+<p>Schon registriert? <a href="{{ url_for('login') }}">Zum Login</a></p>
+{% endblock %}
+

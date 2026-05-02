@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Transaktionen löschen{% endblock %}
+
+{% block content %}
+<h2>Transaktionen löschen</h2>
+
+<form method="POST">
+    <label for="start_date">Von (YYYY-MM-DD):</label><br>
+    <input type="date" id="start_date" name="start_date" required><br><br>
+
+    <label for="end_date">Bis (YYYY-MM-DD):</label><br>
+    <input type="date" id="end_date" name="end_date" required><br><br>
+
+    <button type="submit">Löschen</button>
+</form>
+<hr>
+<h3>Alle Transaktionen löschen</h3>
+<form method="POST" onsubmit="return confirm('Willst du wirklich alle Daten löschen?');">
+    <input type="hidden" name="delete_all" value="1">
+    <button type="submit" style="background-color: red; color: white;">
+        ❌ Alle Daten löschen
+    </button>
+</form>
+
+<p><a href="{{ url_for('transactions') }}">Zurück zur Übersicht</a></p>
+{% endblock %}

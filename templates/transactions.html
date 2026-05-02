@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% block title %}Meine Transaktionen{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 py-6">
+  <div class="flex items-center justify-between mb-6">
+    <h2 class="text-2xl font-semibold">📄 Gebuchte Transaktionen</h2>
+    <span class="text-sm text-gray-500 dark:text-gray-400">
+      {{ transactions|length }} Einträge
+    </span>
+  </div>
+
+  {% if transactions %}
+    <form method="POST" action="{{ url_for('transactions_delete') }}" id="deleteForm">
+      <div class="flex items-center gap-3 mb-3">
+        <button
+          type="submit"
+          class="px-3 py-2 rounded bg-red-600 text-white hover:bg-red-700 disabled:opacity-50"
+          onclick="return confirm('⚠️ Markierte Transaktionen wirklich löschen?')"
+          id="bulkDeleteBtn"
+          disabled
+        >
+          🗑 Markierte löschen
+        </button>
+
+        <a href="{{ url_for('zuordnen') }}" class="text-blue-600 hover:underline dark:text-blue-400">
+          🧾 Transaktionen zuordnen
+        </a>
+      </div>
+
+      <div class="rounded-xl overflow-hidden shadow ring-1 ring-black/5 dark:ring-white/10">
+        <table class="min-w-full text-sm bg-white dark:bg-gray-800">
+          <thead class="bg-gray-100 dark:bg-gray-700 text-left text-gray-600 dark:text-gray-300 font-medium">
+            <tr>
+              <th class="p-3 w-10">
+                <!-- Alle auswählen -->
+                <input type="checkbox" id="selectAll" class="w-4 h-4">
+              </th>
+              <th class="p-3">Datum</th>
+              <th class="p-3">Empfänger</th>
+              <th class="p-3">Konto</th>
+              <th class="p-3 text-right">Netto</th>
+              <th class="p-3 text-right">Steuer</th>
+              <th class="p-3">Verwendungszweck</th>
+              <th class="p-3 w-10 text-center">Aktion</th>
+            </tr>
+          </thead>
+          <tbody class="text-gray-800 dark:text-gray-100">
+            {% for t in transactions %}
+            <tr
+              class="border-t border-gray-100 dark:border-gray-700 {{ 'bg-gray-50 dark:bg-gray-900' if loop.index0 % 2 else 'bg-white dark:bg-gray-800' }} {{ 'hover:bg-blue-50 dark:hover:bg-gray-700' }}"
+            >
+              <td class="p-3 align-top">
+                <input type="checkbox" name="ids" value="{{ t.id }}" class="rowCheck w-4 h-4">
+              </td>
+              <td class="p-3 whitespace-nowrap font-mono align-top">{{ t.date }}</td>
+              <td class="p-3 align-top">{{ t.description }}</td>
+              <td class="p-3 align-top">
+                {% if t.konto_name %}
+                  <a href="{{ url_for('konto_details', id=t.konto_id) }}"
+                     class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-200 hover:underline">
+                    {{ t.konto_name }}
+                  </a>
+                {% else %}
+                  <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300">
+                    —
+                  </span>
+                {% endif %}
+              </td>
+              <td class="p-3 text-right align-top">
+                <span class="{{ 'text-green-600 dark:text-green-400' if t.amount > 0 else 'text-red-600 dark:text-red-400' }}">
+                  {{ "%.2f"|format(t.amount) }} €
+                </span>
+              </td>
+              <td class="p-3 text-right align-top">
+                {{ "%.2f"|format(t.steueranteil or 0) }} €
+              </td>
+              <td class="p-3 align-top">
+                {{ t.verwendungszweck or "—" }}
+              </td>
+              <td class="p-3 align-top text-center">
+                <!-- Einzellöschung -->
+                <form method="POST" action="{{ url_for('transactions_delete') }}" onsubmit="return confirm('⚠️ Diesen Datensatz löschen?')">
+                  <input type="hidden" name="ids" value="{{ t.id }}">
+                  <button type="submit" class="text-red-600 hover:text-red-800" title="Löschen" aria-label="Löschen">🗑</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </form>
+  {% else %}
+    <p class="text-gray-600 dark:text-gray-300">📭 Noch keine Transaktionen vorhanden.</p>
+    <div class="mt-4">
+      <a href="{{ url_for('zuordnen') }}" class="text-blue-600 hover:underline dark:text-blue-400">🧾 Transaktionen zuordnen</a>
+    </div>
+  {% endif %}
+
+  <div class="mt-6">
+    <a href="{{ url_for('dashboard') }}" class="text-blue-600 hover:underline dark:text-blue-400">⬅ Zurück zum Dashboard</a>
+  </div>
+</div>
+
+<script>
+  // Checkbox-Logik: Select all / enable bulk delete button
+  const selectAll = document.getElementById('selectAll');
+  const checks = () => Array.from(document.querySelectorAll('.rowCheck'));
+  const bulkBtn = document.getElementById('bulkDeleteBtn');
+
+  function updateBulkBtn() {
+    const any = checks().some(c => c.checked);
+    if (bulkBtn) bulkBtn.disabled = !any;
+  }
+
+  if (selectAll) {
+    selectAll.addEventListener('change', () => {
+      checks().forEach(c => c.checked = selectAll.checked);
+      updateBulkBtn();
+    });
+  }
+
+  checks().forEach(c => c.addEventListener('change', () => {
+    // Wenn alles einzeln angewählt → Header-Checkbox anpassen
+    const allChecked = checks().every(x => x.checked);
+    if (selectAll) selectAll.checked = allChecked;
+    updateBulkBtn();
+  }));
+
+  updateBulkBtn();
+</script>
+{% endblock %}

@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Kontenverwaltung{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-6">
+  <h2 class="text-2xl font-semibold mb-6 text-gray-900 dark:text-gray-100">📚 Kontenverwaltung</h2>
+
+  <!-- Neues Konto hinzufügen -->
+  <form method="POST" class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Kontoname</label>
+        <input type="text" name="name" required
+               class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-white rounded-md shadow-sm">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Typ</label>
+        <select name="typ" required
+                class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-white rounded-md shadow-sm">
+          <option value="einnahme">Einnahme</option>
+          <option value="ausgabe">Ausgabe</option>
+          <option value="neutral">Neutral</option>
+        </select>
+      </div>
+    </div>
+    <div class="mt-4">
+      <button type="submit"
+              class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded">
+        ➕ Konto hinzufügen
+      </button>
+    </div>
+  </form>
+
+  <!-- Bestehende Konten -->
+  <h3 class="text-lg font-semibold mb-3 text-gray-900 dark:text-gray-100">📋 Bestehende Konten</h3>
+
+  <table class="min-w-full rounded-xl overflow-hidden shadow text-sm bg-white dark:bg-gray-900">
+    <thead class="bg-gray-100 dark:bg-gray-700 text-left text-gray-600 dark:text-gray-300 font-medium">
+      <tr>
+        <th class="p-3">ID</th>
+        <th class="p-3">Name</th>
+        <th class="p-3">Typ</th>
+        <th class="p-3">Aktionen</th>
+      </tr>
+    </thead>
+    <tbody class="text-gray-800 dark:text-gray-100">
+      {% for konto in konten %}
+      <tr class="border-t {{ 'bg-blue-50/50 dark:bg-gray-800' if loop.index0 % 2 == 1 else 'bg-white dark:bg-gray-900' }} hover:bg-blue-50 dark:hover:bg-gray-800">
+        <!-- Jede Zelle (außer Aktionen) ist ein Link -->
+        <td class="p-3 font-mono">
+          <a href="{{ url_for('konto_details', id=konto.id) }}" class="block w-full h-full hover:underline focus:underline">
+            {{ konto.id }}
+          </a>
+        </td>
+        <td class="p-3">
+          <a href="{{ url_for('konto_details', id=konto.id) }}" class="block w-full h-full text-blue-700 dark:text-blue-400 hover:underline focus:underline">
+            {{ konto.name }}
+          </a>
+        </td>
+        <td class="p-3">
+          <a href="{{ url_for('konto_details', id=konto.id) }}" class="block w-full h-full hover:underline focus:underline">
+            {{ konto.typ | capitalize }}
+          </a>
+        </td>
+
+        <!-- Aktionen bleiben als einzelne Links -->
+        <td class="p-3 flex gap-3">
+          <a href="{{ url_for('konto_details', id=konto.id) }}"
+             class="text-blue-600 dark:text-blue-400 hover:underline" title="Anzeigen">🔎</a>
+          <a href="{{ url_for('bearbeite_konto', id=konto.id) }}"
+             class="text-yellow-600 dark:text-yellow-400 hover:underline" title="Bearbeiten">✎</a>
+          <a href="{{ url_for('loesche_konto', id=konto.id) }}"
+             class="text-red-600 dark:text-red-400 hover:underline"
+             onclick="return confirm('⚠️ Konto wirklich löschen?')"
+             title="Löschen">🗑</a>
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="4" class="p-3 text-center text-gray-500 dark:text-gray-300">Keine Konten vorhanden.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="mt-6">
+    <a href="{{ url_for('dashboard') }}"
+       class="text-blue-600 dark:text-blue-400 hover:underline">⬅ Zurück zum Dashboard</a>
+  </div>
+</div>
+{% endblock %}
+
+

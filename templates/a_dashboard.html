@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto bg-white dark:bg-gray-800 shadow rounded-xl p-6">
+  <h2 class="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100">📊 Dashboard</h2>
+
+  <p class="mb-6 text-gray-700 dark:text-gray-300">
+    Willkommen! Hier kannst du deine Banktransaktionen verwalten und auswerten.
+  </p>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <a href="{{ url_for('upload') }}"
+       class="block bg-blue-600 hover:bg-blue-700 text-white text-center font-medium py-3 px-4 rounded">
+      📤 Bankauszug hochladen
+    </a>
+
+    <a href="{{ url_for('transactions') }}"
+       class="block bg-green-600 hover:bg-green-700 text-white text-center font-medium py-3 px-4 rounded">
+      📄 Transaktionen anzeigen
+    </a>
+
+    <a href="{{ url_for('delete_transactions') }}"
+       class="block bg-red-600 hover:bg-red-700 text-white text-center font-medium py-3 px-4 rounded">
+      🗑 Alle Transaktionen löschen
+    </a>
+
+    <a href="{{ url_for('zuordnen') }}"
+       class="block bg-yellow-500 hover:bg-yellow-600 text-white text-center font-medium py-3 px-4 rounded">
+      🧾 Transaktionen zuordnen
+    </a>
+
+    <a href="{{ url_for('regeln') }}"
+       class="block bg-purple-600 hover:bg-purple-700 text-white text-center font-medium py-3 px-4 rounded">
+      ⚙️ Regeln verwalten
+    </a>
+
+    <a href="{{ url_for('konten') }}"
+       class="block bg-gray-700 hover:bg-gray-800 text-white text-center font-medium py-3 px-4 rounded">
+      🏦 Konten verwalten
+    </a>
+
+    <a href="{{ url_for('logout') }}"
+       class="block bg-black hover:bg-gray-900 text-white text-center font-medium py-3 px-4 rounded">
+      🚪 Abmelden
+    </a>
+  </div>
+</div>
+{% endblock %}

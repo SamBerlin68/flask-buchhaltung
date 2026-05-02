@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Konto: {{ konto.name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto px-4 py-6">
+  <h2 class="text-2xl font-semibold mb-4">📋 Konto: {{ konto.name }}</h2>
+
+  <div class="bg-white rounded-xl shadow p-4 mb-6">
+    <p><strong>Typ:</strong> {{ konto.typ | capitalize }}</p>
+    <div class="mt-4 flex gap-4">
+      <a href="{{ url_for('bearbeite_konto', id=konto.id) }}" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">✏️ Bearbeiten</a>
+      <a href="{{ url_for('loesche_konto', id=konto.id) }}" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700" onclick="return confirm('⚠️ Willst du dieses Konto wirklich löschen?')">🗑️ Löschen</a>
+      <a href="{{ url_for('konten') }}" class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">⬅ Zurück</a>
+    </div>
+  </div>
+
+  <h3 class="text-lg font-semibold mb-3">📊 Zugeordnete Buchungen</h3>
+  {% if buchungen %}
+    <table class="min-w-full bg-white rounded-xl overflow-hidden shadow text-sm">
+      <thead class="bg-gray-100 text-left text-gray-600 font-medium">
+        <tr>
+          <th class="p-3">Datum</th>
+          <th class="p-3">Empfänger</th>
+          <th class="p-3">Verwendungszweck</th>
+          <th class="p-3">Betrag</th>
+        </tr>
+      </thead>
+      <tbody class="text-gray-800">
+        {% for b in buchungen %}
+        <tr class="border-t">
+          <td class="p-3">{{ b.datum }}</td>
+          <td class="p-3">{{ b.empfaenger }}</td>
+          <td class="p-3">{{ b.verwendungszweck }}</td>
+          <td class="p-3">{{ "%.2f"|format(b.betrag) }} €</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="text-gray-500">Keine Buchungen für dieses Konto vorhanden.</p>
+  {% endif %}
+</div>
+{% endblock %}
+

@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row mb-4">
+
+  <!-- Umsatz -->
+  <div class="col-md-3 mb-3">
+    <div class="card shadow-sm border-0">
+      <div class="card-body text-center">
+        <small class="text-muted">Umsatz</small>
+        <h4 class="mt-2">
+          {{ sum_einnahmen|euro|safe }}
+        </h4>
+      </div>
+    </div>
+  </div>
+
+  <!-- Kosten -->
+  <div class="col-md-3 mb-3">
+    <div class="card shadow-sm border-0">
+      <div class="card-body text-center">
+        <small class="text-muted">Kosten</small>
+        <h4 class="mt-2">
+          {{ sum_ausgaben|euro|safe }}
+        </h4>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ergebnis -->
+  <div class="col-md-3 mb-3">
+    <div class="card shadow-sm border-0">
+      <div class="card-body text-center">
+        <small class="text-muted">Betriebsergebnis</small>
+        <h4 class="mt-2">
+          {{ ergebnis|euro|safe }}
+        </h4>
+      </div>
+    </div>
+  </div>
+
+  <!-- Marge -->
+  <div class="col-md-3 mb-3">
+    <div class="card shadow-sm border-0">
+      <div class="card-body text-center">
+        <small class="text-muted">Gewinnmarge</small>
+        <h4 class="mt-2 {% if gewinn_pos %}text-success{% else %}text-danger{% endif %}">
+          {{ marge|percent_de }}
+        </h4>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="row justify-content-center mb-4">
+  <div class="col-md-8">
+    <div class="card shadow-sm border-0">
+      <div class="card-body py-3" style="height: 220px;">
+        <canvas id="bwaChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const umsatz = {{ sum_einnahmen|tojson }};
+    const kosten = {{ sum_ausgaben|tojson }};
+    const ergebnis = {{ ergebnis|tojson }};
+
+    const ctx = document.getElementById('bwaChart');
+    if (!ctx) return;
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Struktur'],
+            datasets: [
+                {
+                    label: 'Kosten',
+                    data: [kosten],
+                    backgroundColor: '#6c757d'
+                },
+                {
+                    label: 'Gewinn',
+                    data: [ergebnis > 0 ? ergebnis : 0],
+                    backgroundColor: '#198754'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom' }
+            },
+            scales: {
+                x: {
+                    stacked: true
+                },
+                y: {
+                    stacked: true,
+                    ticks: {
+                        callback: function(value) {
+                            return value.toLocaleString('de-DE') + ' €';
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+});
+</script>
+
+
+
+
+<h1 class="mb-4">
+  BWA –
+  {% if zeitraum == 'monat' %}
+    {{ monat }} / {{ jahr }}
+  {% elif zeitraum == 'quartal' %}
+    Q{{ quartal }} {{ jahr }}
+  {% else %}
+    {{ jahr }}
+  {% endif %}
+</h1>
+<form method="get" class="row g-2 mb-4 align-items-end">
+
+  <div class="col-auto">
+    <select name="zeitraum" class="form-select">
+      <option value="monat" {{ 'selected' if zeitraum=='monat' else '' }}>Monat</option>
+      <option value="quartal" {{ 'selected' if zeitraum=='quartal' else '' }}>Quartal</option>
+      <option value="jahr" {{ 'selected' if zeitraum=='jahr' else '' }}>Jahr</option>
+    </select>
+  </div>
+
+  <div class="col-auto">
+    <input type="number" name="jahr" value="{{ jahr }}" class="form-control" min="2000" max="2100">
+  </div>
+
+  <div class="col-auto">
+    <input type="number" name="monat" value="{{ monat }}" class="form-control" min="1" max="12">
+  </div>
+
+  <div class="col-auto">
+    <input type="number" name="quartal" value="{{ quartal }}" class="form-control" min="1" max="4">
+  </div>
+
+  <div class="col-auto">
+    <button type="submit" class="btn btn-primary btn-sm">Aktualisieren</button>
+  </div>
+
+</form>
+
+<h3>Einnahmen</h3>
+<table class="table table-hover align-middle">
+    {% for e in einnahmen %}
+    <tr>
+        <td>{{ e.name }}</td>
+        <td class="text-end">{{ e.betrag|euro|safe }}</td>
+        <td class="text-end">{{ e.anteil|percent_de }}</td>
+    </tr>
+    {% endfor %}
+    <tr class="fw-bold border-top">
+        <td>Summe Einnahmen</td>
+        <td class="text-end">{{ sum_einnahmen|euro|safe }}</td>
+        <td></td>
+    </tr>
+</table>
+
+<h3>Ausgaben</h3>
+<table class="table table-striped">
+    {% for a in ausgaben %}
+    <tr>
+        <td>{{ a.name }}</td>
+        <td class="text-end">{{ a.betrag|euro|safe }}</td>
+        <td class="text-end">{{ a.anteil|percent_de }}</td>
+    </tr>
+    {% endfor %}
+    <tr class="fw-bold">
+        <td>Summe Ausgaben</td>
+        <td class="text-end">{{ sum_ausgaben|euro|safe }}</td>
+        <td></td>
+    </tr>
+</table>
+
+
+
+
+
+{% endblock %}

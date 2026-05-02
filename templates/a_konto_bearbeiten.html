@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Konto bearbeiten{% endblock %}
+
+{% block content %}
+<div class="max-w-xl mx-auto px-4 py-6">
+  <h2 class="text-2xl font-semibold mb-4">✏️ Konto bearbeiten</h2>
+
+  <form method="POST" class="bg-white rounded-xl shadow p-5">
+    <div class="mb-4">
+      <label class="block text-sm font-medium text-gray-700">Kontoname</label>
+      <input type="text" name="name" value="{{ konto.name }}" required
+             class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+    </div>
+
+    <div class="mb-4">
+      <label class="block text-sm font-medium text-gray-700">Typ</label>
+      <select name="typ" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+        <option value="einnahme" {% if konto.typ == 'einnahme' %}selected{% endif %}>Einnahme</option>
+        <option value="ausgabe" {% if konto.typ == 'ausgabe' %}selected{% endif %}>Ausgabe</option>
+        <option value="neutral" {% if konto.typ == 'neutral' %}selected{% endif %}>Neutral</option>
+      </select>
+    </div>
+
+    <div class="flex gap-4 mt-6">
+      <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">💾 Speichern</button>
+      <a href="{{ url_for('konto_details', id=konto.id) }}" class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">⬅ Zurück</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
