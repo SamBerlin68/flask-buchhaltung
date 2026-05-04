@@ -1,10 +1,25 @@
-# Datenbanken
-*.db
-
 # Python
-venv/
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
 
-# Secrets
-.env
+# Virtual Environment
+venv/
+.env/
+
+# Flask
+instance/
+*.db
+*.sqlite3
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Deine sensiblen Daten
+*.xlsx
+*.csv
