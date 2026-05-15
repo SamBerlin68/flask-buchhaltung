@@ -1,0 +1,73 @@
+<!-- templates/buchungen.html -->
+{% extends 'base.html' %}
+{% block title %}Buchungen{% endblock %}
+{% block content %}
+<h1 class="h5">Buchungen</h1>
+<a href="{{ url_for('buchung_neu') }}" class="btn btn-success">
+  ➕ Manuelle Buchung
+</a>
+
+<form method="post" action="{{ url_for('buchungen_loeschen') }}">
+<div class="table-responsive">
+<table class="table table-sm table-striped align-middle">
+<thead>
+<tr>
+<th style="width: 2rem"><input type="checkbox" onclick="document.querySelectorAll('.rowchk').forEach(c=>c.checked=this.checked)"></th>
+<th>Datum</th>
+<th>Belegnr.</th>   <!-- 👈 NEU -->
+<th>Empfänger</th>
+<th>Verwendungszweck</th>
+<th>Konto</th>
+<th class="text-end">Netto</th>
+<th class="text-end">Steuer</th>
+<th>Steuersatz</th>
+<th style="width: 3rem"></th> <!-- 👈 NEU: Aktion -->
+</tr>
+</thead>
+<tbody>
+{% for b in buchungen %}
+<tr>
+<td><input type="checkbox" class="form-check-input rowchk" name="ids" value="{{ b.id }}"></td>
+<td>{{ b.datum }}</td>
+<td class="text-nowrap">
+  {% if b.belegnummer %}
+    <span class="badge bg-light text-dark">{{ b.belegnummer }}</span>
+  {% else %}
+    —
+  {% endif %}
+</td>
+<td>{{ b.empfaenger }}</td>
+<td class="text-wrap">{{ b.verwendungszweck }}</td>
+<td>{{ b.konto_name }} <span class="badge bg-light text-dark">{{ b.konto_typ }}</span></td>
+<td class="text-end">{{ '%.2f'|format(b.betrag_netto) }}</td>
+<td class="text-end">{{ '%.2f'|format(b.steuerbetrag) }}</td>
+<td>{{ ('%.2f'|format(b.steuersatz)).rstrip('0').rstrip('.') if b.steuersatz else '—' }}{% if b.steuersatz %}%{% endif %}</td>
+  <!-- 👇 NEU: Bearbeiten -->
+  <td class="text-end">
+    <a href="{{ url_for('buchung_bearbeiten', buchung_id=b.id) }}"
+       class="btn btn-sm btn-outline-secondary"
+       title="Buchung bearbeiten">
+      ✏️
+    </a>
+  </td>
+  {% if b.konto_name == 'Umsatzsteuer/Vorsteuer' and b.betrag_netto != 0 %}
+<form method="post"
+      action="{{ url_for('steuerzahlung_korrigieren', buchung_id=b.id) }}"
+      style="display:inline"
+      onsubmit="return confirm('Steuerzahlung korrekt zuordnen?');">
+  <button class="btn btn-sm btn-outline-danger"
+          title="Steuerzahlung korrekt zuordnen">
+    ♻️
+  </button>
+</form>
+{% endif %}
+</tr>
+{% else %}
+<tr><td colspan="10" class="text-muted">Noch keine Buchungen vorhanden.</td></tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+<div class="d-flex gap-2">
+<button class="btn btn-outline-danger" onclick="return confirm('Ausgewählte Buchungen löschen?');">Ausgewählte löschen</button>
+{% endblock %}

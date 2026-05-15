@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>USt-Voranmeldung Q{{ quartal }} / {{ jahr }}</h2>
+<form method="get" class="mb-3">
+  <select name="jahr" class="form-select d-inline w-auto">
+    {% for j in range(jahr-3, jahr+1) %}
+      <option value="{{ j }}" {% if j == jahr %}selected{% endif %}>
+        {{ j }}
+      </option>
+    {% endfor %}
+  </select>
+
+  <select name="quartal" class="form-select d-inline w-auto">
+    {% for q in [1,2,3,4] %}
+      <option value="{{ q }}" {% if q == quartal %}selected{% endif %}>
+        Q{{ q }}
+      </option>
+    {% endfor %}
+  </select>
+
+  <button class="btn btn-primary">Anzeigen</button>
+</form>
+<table class="table mt-4">
+  <tr>
+    <th>Umsatzsteuer 19%</th>
+    <td>{{ "%.2f"|format(ust_19) }} €</td>
+  </tr>
+  <tr>
+    <th>Umsatzsteuer 7%</th>
+    <td>{{ "%.2f"|format(ust_7) }} €</td>
+  </tr>
+  <tr>
+    <th>Vorsteuer 19%</th>
+    <td>{{ "%.2f"|format(vorsteuer_19) }} €</td>
+  </tr>
+  <tr>
+    <th>Vorsteuer 7%</th>
+    <td>{{ "%.2f"|format(vorsteuer_7) }} €</td>
+  </tr>
+  <tr class="table-primary">
+    <th>Zahllast</th>
+    <td><strong>{{ "%.2f"|format(zahllast) }} €</strong></td>
+  </tr>
+</table>
+
+{% endblock %}

@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}Transaktionen zuordnen{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto">
+  <h2 class="text-2xl font-semibold mb-6">🧾 Transaktionen zuordnen</h2>
+
+  {% if transaktionen %}
+  <table class="w-full text-sm bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow">
+    <thead class="bg-gray-100 dark:bg-gray-700 text-left text-gray-600 dark:text-gray-300">
+      <tr>
+        <th class="p-3">Datum</th>
+        <th class="p-3">Empfänger</th>
+        <th class="p-3">Verwendungszweck</th>
+        <th class="p-3 text-right">Betrag</th>
+      </tr>
+    </thead>
+    <tbody class="text-gray-800 dark:text-gray-100">
+      {% for t in transaktionen %}
+      <tr class="{{ 'bg-blue-100 dark:bg-gray-900' if loop.index0 % 2 == 1 else 'bg-white dark:bg-gray-800' }} hover:bg-blue-50 dark:hover:bg-gray-700 cursor-pointer"
+    onclick="openModal({{ t.id }}, '{{ t.datum }}', '{{ t.empfaenger | escape }}', '{{ t.verwendungszweck | escape }}', {{ '%.2f'|format(t.betrag) }})">
+        <td class="p-3">{{ t.datum }}</td>
+        <td class="p-3">{{ t.empfaenger }}</td>
+        <td class="p-3">{{ t.verwendungszweck }}</td>
+        <td class="p-3 text-right">{{ "%.2f"|format(t.betrag) }} €</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="text-gray-600 dark:text-gray-300">✅ Alle Transaktionen wurden bereits zugeordnet.</p>
+  {% endif %}
+</div>
+
+<!-- Modal (versteckt) -->
+<div id="modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+  <div class="bg-white dark:bg-gray-800 p-6 rounded-xl w-full max-w-lg shadow-xl">
+    <h3 class="text-xl font-semibold mb-4">💼 Transaktion zuordnen</h3>
+    <form method="POST">
+      <input type="hidden" name="trans_id" id="trans_id">
+
+      <p class="mb-2 text-gray-700 dark:text-gray-200"><strong>Empfänger:</strong> <span id="modal_empfaenger"></span></p>
+      <p class="mb-2 text-gray-700 dark:text-gray-200"><strong>Verwendungszweck:</strong> <span id="modal_verwendungszweck"></span></p>
+      <p class="mb-4 text-gray-700 dark:text-gray-200"><strong>Betrag:</strong> <span id="modal_betrag"></span> €</p>
+
+      <div class="mb-4">
+        <label class="block mb-1 text-sm">Konto:</label>
+        <select name="konto_id" required class="w-full p-2 rounded border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-white">
+          {% for k in konten %}
+          <option value="{{ k.id }}">{{ k.name }} ({{ k.typ }})</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="mb-4">
+        <label class="block mb-1 text-sm">Steuersatz:</label>
+        <select name="steuersatz" required class="w-full p-2 rounded border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-white">
+          <option value="19.0">19 %</option>
+          <option value="7.0">7 %</option>
+          <option value="0.0">0 %</option>
+        </select>
+      </div>
+
+      <label class="inline-flex items-center mb-4">
+        <input type="checkbox" name="regel_speichern" value="1" class="mr-2">
+        Regel speichern
+      </label>
+
+      <div class="flex justify-between items-center">
+        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">💾 Buchen</button>
+        <button type="button" onclick="closeModal()" class="text-gray-500 hover:underline">Abbrechen</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  function openModal(id, datum, empfaenger, verwendungszweck, betrag) {
+    document.getElementById('trans_id').value = id;
+    document.getElementById('modal_empfaenger').textContent = empfaenger;
+    document.getElementById('modal_verwendungszweck').textContent = verwendungszweck;
+    document.getElementById('modal_betrag').textContent = betrag.toFixed(2);
+    document.getElementById('modal').classList.remove('hidden');
+  }
+
+  function closeModal() {
+    document.getElementById('modal').classList.add('hidden');
+  }
+</script>
+{% endblock %}

@@ -1,0 +1,25 @@
+<!-- templates/register.html -->
+{% extends 'base.html' %}
+{% block title %}Registrieren{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+<div class="col-12 col-md-6 col-lg-4">
+<h1 class="h3 mb-3">Registrieren</h1>
+<form method="post">
+<div class="mb-3">
+<label class="form-label required">Benutzername</label>
+<input type="text" class="form-control" name="username" required>
+</div>
+<div class="mb-3">
+<label class="form-label required">Passwort</label>
+<input type="password" class="form-control" name="password" required>
+</div>
+<div class="mb-3">
+<label class="form-label required">Passwort bestätigen</label>
+<input type="password" class="form-control" name="password_confirm" required>
+</div>
+<button class="btn btn-success w-100">Konto anlegen</button>
+</form>
+</div>
+</div>
+{% endblock %}

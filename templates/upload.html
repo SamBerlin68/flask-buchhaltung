@@ -1,0 +1,14 @@
+<!-- templates/upload.html -->
+{% extends 'base.html' %}
+{% block title %}CSV Upload{% endblock %}
+{% block content %}
+<h1 class="h5">CSV Upload</h1>
+<form method="post" enctype="multipart/form-data" class="col-12 col-md-8 col-lg-6">
+<div class="mb-3">
+<label class="form-label required">CSV-Datei</label>
+<input type="file" class="form-control" name="csv_file" accept=".csv" required>
+<div class="form-text">Erwartete Spalten: Buchungsdatum/Datum, Empfänger, Verwendungszweck, Betrag</div>
+</div>
+<button class="btn btn-primary">Hochladen</button>
+</form>
+{% endblock %}
