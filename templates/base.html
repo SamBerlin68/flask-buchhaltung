@@ -15,26 +15,45 @@ body { padding-top: 4.5rem; }
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
 <div class="container-fluid">
+<<<<<<< HEAD
 <a class="navbar-brand" href="{{ url_for('main.dashboard') }}">Buchhaltung</a>
+=======
+<a class="navbar-brand" href="{{ url_for('dashboard') }}">Buchhaltung</a>
+>>>>>>> 49229bf53f4f67d4f147d6b416d58bbdbc41cd23
 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample" aria-controls="navbarsExample" aria-expanded="false" aria-label="Toggle navigation">
 <span class="navbar-toggler-icon"></span>
 </button>
 <div class="collapse navbar-collapse" id="navbarsExample">
 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 {% if session.get('user_id') %}
+<<<<<<< HEAD
 <li class="nav-item"><a class="nav-link" href="{{ url_for('main.upload') }}">Upload</a></li>
 <li class="nav-item"><a class="nav-link" href="{{ url_for('main.zuordnen') }}">Zuordnen</a></li>
 <li class="nav-item"><a class="nav-link" href="{{ url_for('main.buchungen_liste') }}">Buchungen</a></li>
 <li class="nav-item"><a class="nav-link" href="{{ url_for('main.konten') }}">Konten</a></li>
 <li class="nav-item"><a class="nav-link" href="{{ url_for('main.regeln') }}">Regeln</a></li>
+=======
+<li class="nav-item"><a class="nav-link" href="{{ url_for('upload') }}">Upload</a></li>
+<li class="nav-item"><a class="nav-link" href="{{ url_for('zuordnen') }}">Zuordnen</a></li>
+<li class="nav-item"><a class="nav-link" href="{{ url_for('buchungen_liste') }}">Buchungen</a></li>
+<li class="nav-item"><a class="nav-link" href="{{ url_for('konten') }}">Konten</a></li>
+<li class="nav-item"><a class="nav-link" href="{{ url_for('regeln') }}">Regeln</a></li>
+>>>>>>> 49229bf53f4f67d4f147d6b416d58bbdbc41cd23
 {% endif %}
 </ul>
 <ul class="navbar-nav">
 {% if session.get('user_id') %}
+<<<<<<< HEAD
 <li class="nav-item"><a class="nav-link" href="{{ url_for('main.logout') }}">Logout</a></li>
 {% else %}
 <li class="nav-item"><a class="nav-link" href="{{ url_for('main.login') }}">Login</a></li>
 <li class="nav-item"><a class="nav-link" href="{{ url_for('main.mainregister') }}">Registrieren</a></li>
+=======
+<li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">Logout</a></li>
+{% else %}
+<li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Login</a></li>
+<li class="nav-item"><a class="nav-link" href="{{ url_for('register') }}">Registrieren</a></li>
+>>>>>>> 49229bf53f4f67d4f147d6b416d58bbdbc41cd23
 {% endif %}
 </ul>
 </div>
