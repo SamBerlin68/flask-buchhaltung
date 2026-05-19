@@ -24,12 +24,15 @@
         <td class="text-end">{{ '%.2f'|format(t.betrag) }}</td>
         <td>
           <!-- FIX: fehlende Anführungsmarke am action-Attribut ergänzt -->
-          <form class="row g-2" method="post" action="{{ url_for('zuordnen') }}">
+          <form class="row g-2" method="post" action="{{ url_for('zuordnung.zuordnen') }}">
             <div class="form-check mb-2">
               <input class="form-check-input" type="checkbox" id="rc_{{ t.id }}" name="reverse_charge" value="1">
               <label class="form-check-label" for="rc_{{ t.id }}">
-                Reverse-Charge (§13b) anwenden
-              </label>
+                  Reverse-Charge (§13b)
+                    <small class="text-muted d-block">
+                        EU-Auslandsrechnung ohne deutsche Umsatzsteuer
+                    </small>
+                </label>
             </div>
 
             <input type="hidden" name="trans_id" value="{{ t.id }}">
@@ -50,15 +53,15 @@
                 type="text"
                 id="belegnummer_{{ t.id }}"
                 name="belegnummer"
-                value="{{ (vorschlaege[t.id]['belegnummer'] if vorschlaege.get(t.id) else '') }}"
+                value="{{ vorschlaege.get(t.id, {}).get('belegnummer', '') }}"
                 placeholder="YYYYMMDD-001">
               <small class="text-muted">Vorschlag kann überschrieben werden.</small>
             </div>
 
 
             <div class="col-5">
-              <div class="input-group input-group-sm">
-                <select class="form-select form-select-sm" name="steuersatz" required>
+              <div class="input-group">
+                <select class="form-select" name="steuersatz" required>
                   {% for opt in [0, 7, 19] %}
                     <option value="{{ opt }}"
                       {% if (vs.get('steuersatz', 19.0)|float) == opt %}selected{% endif %}>

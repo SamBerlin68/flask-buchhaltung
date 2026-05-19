@@ -20,58 +20,7 @@ main = Blueprint("main", __name__)
 def home():
     return redirect(url_for("main.login"))
 
-# -------------------------- Auth -------------------------------------------
-@main.route("/register", methods=["GET", "POST"])
-def register():
-        if request.method == "POST":
-            username = request.form.get("username", "").strip()
-            password = request.form.get("password", "")
-            password_confirm = request.form.get("password_confirm", "")
 
-            if not username or not password:
-                flash("❌ Bitte Benutzername und Passwort angeben.")
-                return redirect(url_for("main.register"))
-            if password != password_confirm:
-                flash("❌ Die Passwörter stimmen nicht überein!")
-                return redirect(url_for("main.register"))
-
-            hashed_pw = bcrypt.generate_password_hash(password).decode("utf-8")
-            try:
-                with get_db() as conn:
-                    conn.execute(
-                        "INSERT INTO users (username, password) VALUES (?, ?)",
-                        (username, hashed_pw),
-                    )
-                flash("✅ Registrierung erfolgreich! Bitte einloggen.")
-                return redirect(url_for("main.login"))
-            except sqlite3.IntegrityError:
-                flash("❌ Benutzername ist bereits vergeben.")
-                return redirect(url_for("main.register"))
-        return render_template("register.html")
-
-@main.route("/login", methods=["GET", "POST"])
-def login():
-        if request.method == "POST":
-            username = request.form.get("username", "").strip()
-            password = request.form.get("password", "")
-            with get_db() as conn:
-                user = conn.execute(
-                    "SELECT id, username, password FROM users WHERE username = ?",
-                    (username,),
-                ).fetchone()
-            if user and bcrypt.check_password_hash(user[2], password):
-                session["user_id"] = int(user[0])
-                flash("👋 Willkommen zurück!")
-                return redirect(url_for("main.dashboard"))
-            flash("❌ Login fehlgeschlagen. Benutzername oder Passwort ist falsch.")
-            return redirect(url_for("main.login"))
-        return render_template("login.html")
-
-@main.route("/logout")
-def logout():
-        session.clear()
-        flash("🚪 Du wurdest ausgeloggt.")
-        return redirect(url_for("main.login"))
 
 # -------------------------- Dashboard --------------------------------------
 @main.route("/dashboard")
