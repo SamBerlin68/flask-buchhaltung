@@ -29,8 +29,8 @@ def konten():
                 if name and typ in {"einnahme", "ausgabe", "neutral"}:
                     try:
                         conn.execute(
-                            "INSERT INTO konten (name, typ, kontonummer) VALUES (?,?,?)",
-                            (name, typ, kontonummer),
+                            "INSERT INTO konten (user_id, name, typ, kontonummer) VALUES (?,?,?,?)",
+                            (session["user_id"], name, typ, kontonummer),
                         )
                         flash(f"✅ Konto '{name}' wurde hinzugefügt.")
                         return redirect(url_for("konto.konten"))
@@ -39,7 +39,8 @@ def konten():
                 else:
                     flash("❌ Bitte gültigen Namen und Typ angeben.")
             konten_liste = conn.execute(
-                "SELECT * FROM konten ORDER BY name"
+                "SELECT * FROM konten WHERE user_id = ? ORDER BY name",
+                (session["user_id"],)
             ).fetchall()
         return render_template("konten.html", konten=konten_liste)
 
@@ -74,8 +75,9 @@ def konto_details(konto_id: int):
                 SELECT * 
                 FROM konten 
                 WHERE id = ? 
+                    AND user_id = ?
                 """,
-                (konto_id,),
+                (konto_id, session["user_id"]),
             ).fetchone()
 
             if not konto:
@@ -192,7 +194,7 @@ def konto_bearbeiten(konto_id: int):
             return redirect(url_for("auth.login"))
         with get_db() as conn:
             konto = conn.execute(
-                "SELECT * FROM konten WHERE id = ?", (konto_id,)
+                "SELECT * FROM konten WHERE id = ? AND user_id = ?", (konto_id, session["user_id"])
             ).fetchone()
             if not konto:
                 flash("❌ Konto nicht gefunden.")
@@ -206,8 +208,8 @@ def konto_bearbeiten(konto_id: int):
                     return redirect(url_for("konto.konto_bearbeiten", konto_id=konto_id))
                 try:
                     conn.execute(
-                        "UPDATE konten SET name = ?, typ = ?, kontonummer = ? WHERE id = ?",
-                        (neuer_name, neuer_typ, neue_nr, konto_id),
+                        "UPDATE konten SET name = ?, typ = ?, kontonummer = ? WHERE id = ? AND user_id = ?",
+                        (neuer_name, neuer_typ, neue_nr, konto_id, session["user_id"]),
                     )
                     flash("✅ Konto wurde aktualisiert.")
                     return redirect(url_for("konto.konto_details", konto_id=konto_id))
@@ -226,8 +228,8 @@ def konto_loeschen(konto_id: int):
     with get_db() as conn:
         # Prüfen, ob noch Buchungen existieren
         count = conn.execute(
-            "SELECT COUNT(*) AS c FROM buchungen WHERE konto_id = ?",
-            (konto_id,),
+            "SELECT COUNT(*) AS c FROM buchungen WHERE konto_id = ? AND user_id = ?",
+            (konto_id, session["user_id"]),
         ).fetchone()[0]
 
         if count:
@@ -236,8 +238,8 @@ def konto_loeschen(konto_id: int):
 
         # Konto löschen
         conn.execute(
-            "DELETE FROM konten WHERE id = ?",
-            (konto_id,),
+            "DELETE FROM konten WHERE id = ? AND user_id = ?",
+            (konto_id, session["user_id"]),
         )
 
         flash("✅ Konto wurde gelöscht.")

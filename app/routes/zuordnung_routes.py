@@ -36,7 +36,7 @@ def zuordnen():
 
                 trans = conn.execute(
                     "SELECT * FROM import_transaktionen WHERE id = ? AND user_id = ? AND verarbeitet = 0",
-                    (trans_id, session["user_id"]),
+                    (trans_id, session["user_id"],),
                 ).fetchone()
 
                 
@@ -58,8 +58,8 @@ def zuordnen():
                 )   
 
                 konto = conn.execute(
-                    "SELECT id, typ, name FROM konten WHERE id = ?",
-                    (int(konto_id),),
+                    "SELECT id, typ, name FROM konten WHERE id = ? AND user_id = ?",
+                    (int(konto_id), session["user_id"],),
                 ).fetchone()
 
                 if not konto:
@@ -68,7 +68,7 @@ def zuordnen():
 
                 if konto["typ"] == "neutral" and konto["name"] not in ERLAUBTE_NEUTRALE_KONTEN:
                     flash("❌ Dieses neutrale Konto kann hier nicht gebucht werden.")
-                    return redirect(url_for("zuordnen"))
+                    return redirect(url_for("zuordnung.zuordnen"))
                 
                 if konto["typ"] == "neutral":
                     steuersatz_f = 0.0
@@ -98,22 +98,22 @@ def zuordnen():
 
                 # Steuerkonto (Umsatzsteuer/Vorsteuer) explizit holen
                 steuer_row = conn.execute(
-                    "SELECT id FROM konten WHERE name = ?",
-                    ("Umsatzsteuer/Vorsteuer",),
+                    "SELECT id FROM konten WHERE name = ? AND user_id = ?",
+                    ("Umsatzsteuer/Vorsteuer", session["user_id"],),
                 ).fetchone()
 
                 if not steuer_row:
                     conn.execute(
                         """
-                        INSERT INTO konten (name, typ, kontonummer)
-                        VALUES (?,?,?)
+                        INSERT INTO konten (user_id, name, typ, kontonummer)
+                        VALUES (?,?,?,?)
                     """,
-                ("Umsatzsteuer/Vorsteuer", "neutral", None),
+                (session["user_id"], "Umsatzsteuer/Vorsteuer", "neutral", None),
                 )
                 steuer_row = conn.execute(
-                    "SELECT id FROM konten WHERE name = ?",
-                    ("Umsatzsteuer/Vorsteuer",),
-                ).fetchone()
+                    "SELECT id FROM konten WHERE name = ? AND user_id = ?",
+                    ("Umsatzsteuer/Vorsteuer", session["user_id"],),
+                ).fetchone()    
 
                 steuer_konto_id = int(steuer_row["id"])
 
@@ -235,24 +235,24 @@ def zuordnen():
                     rest = round(brutto - betrag_to_book, 2)
                     if abs(rest) < 0.01:
                         conn.execute(
-                            "UPDATE import_transaktionen SET verarbeitet = 1 WHERE id = ?",
-                            (trans["id"],),
+                            "UPDATE import_transaktionen SET verarbeitet = 1 WHERE id = ? AND user_id = ?",
+                            (trans["id"], session["user_id"],),
                         )
                     else:
                         conn.execute(
-                            "UPDATE import_transaktionen SET betrag = ?, verarbeitet = 0 WHERE id = ?",
-                            (rest, trans["id"]),
+                            "UPDATE import_transaktionen SET betrag = ?, verarbeitet = 0 WHERE id = ? AND user_id = ?",
+                            (rest, trans["id"], session["user_id"],),
                         )
                 else:
                     conn.execute(
-                        "UPDATE import_transaktionen SET verarbeitet = 1 WHERE id = ?",
-                        (trans["id"],),
+                        "UPDATE import_transaktionen SET verarbeitet = 1 WHERE id = ? AND user_id = ?",
+                        (trans["id"], session["user_id"],),
                     )
 
                 if speichere_regel:
                     conn.execute(
-                        "INSERT INTO regeln (suchbegriff, konto_id, steuersatz) VALUES (?,?,?)",
-                        (trans["empfaenger"], int(konto_id), steuersatz_f),
+                        "INSERT INTO regeln (user_id, suchbegriff, konto_id, steuersatz) VALUES (?,?,?,?)",
+                        (session["user_id"], trans["empfaenger"], int(konto_id), steuersatz_f),
                     )
                     flash("💾 Regel gespeichert.")
                 else:
@@ -266,14 +266,14 @@ def zuordnen():
                 (session["user_id"],),
             ).fetchall()
             konten_liste = conn.execute(
-                "SELECT * FROM konten ORDER BY name"
+                "SELECT * FROM konten WHERE user_id = ? ORDER BY name", (session["user_id"],),
             ).fetchall()
 
             vorschlaege: dict[int, dict] = {}
             beleg_cache: dict[str, str] = {}
 
             for t in transaktionen:
-                konto_id_suggest, vat_suggest = finde_vorschlag(conn, t["empfaenger"], t["verwendungszweck"])
+                konto_id_suggest, vat_suggest = finde_vorschlag(conn, session["user_id"], t["empfaenger"], t["verwendungszweck"])
 
                 d = t["datum"]
                 if d not in beleg_cache:

@@ -39,7 +39,7 @@ def buchungen_loeschen():
         ids = request.form.getlist("ids")
         if not ids:
             flash("ℹ️ Es wurden keine Buchungen ausgewählt.")
-            return redirect(url_for("buchungen_liste"))
+            return redirect(url_for("buchung.buchungen_liste"))
 
         try:
             id_ints = [int(x) for x in ids]
@@ -95,8 +95,8 @@ def buchung_bearbeiten(buchung_id):
 
                  # Kontotyp & -name laden
                 konto = conn.execute(
-                    "SELECT typ, name FROM konten WHERE id = ?",
-                        (konto_id,),
+                    "SELECT typ, name FROM konten WHERE id = ? AND user_id = ?",
+                        (konto_id, session["user_id"],),
                 ).fetchone()
 
                 if not konto:
@@ -169,11 +169,19 @@ def buchung_bearbeiten(buchung_id):
                 """
                 SELECT id, name, typ
                 FROM konten
-                WHERE typ != 'neutral'
-                OR name IN ('Privatentnahmen', 'Privateinlagen', 'Umsatzsteuer/Vorsteuer')
-                ORDER BY typ, name
-                """
-            ).fetchall()
+                WHERE user_id = ?
+                    AND (
+                        typ != 'neutral'
+                        OR name IN (
+                            'Privatentnahmen',
+                            'Privateinlagen',
+                            'Umsatzsteuer/Vorsteuer'
+                        )
+                )
+            ORDER BY typ, name
+            """,
+            (session["user_id"],),
+        ).fetchall()
 
             return render_template(
                 "buchung_bearbeiten.html",
@@ -230,20 +238,27 @@ def steuerzahlung_korrigieren(buchung_id):
 
 @buchung.route("/buchungen/neu", methods=["GET", "POST"])
 def buchung_neu():
-        if "user_id" not in session:
-           flash("⛔ Bitte einloggen.")
-           return redirect(url_for("auth.login"))
-
-        with get_db() as conn:
-            konten = conn.execute(
+    if "user_id" not in session:
+        flash("⛔ Bitte einloggen.")
+        return redirect(url_for("auth.login"))
+    
+    with get_db() as conn:
+        konten = conn.execute(
             """
             SELECT id, name, typ
             FROM konten
-            WHERE typ != 'neutral'
-               OR name IN ('Privateinlagen', 'Privatentnahmen')
+            WHERE user_id = ?
+                AND (
+                    typ != 'neutral'
+                    OR name IN (
+                        'Privateinlagen',
+                        'Privatentnahmen'
+                    )
+                )
             ORDER BY typ, name
-            """
-           ).fetchall()
+            """,
+            (session["user_id"],),
+        ).fetchall()
 
         if request.method == "POST":
            datum = request.form["datum"]
@@ -256,9 +271,12 @@ def buchung_neu():
 
            with get_db() as conn:
             konto = conn.execute(
-                "SELECT typ FROM konten WHERE id = ?",
-                (konto_id,),
+                "SELECT typ FROM konten WHERE id = ? AND user_id = ?",
+                (konto_id, session["user_id"],),
             ).fetchone()
+            if not konto:
+                flash("❌ Konto nicht gefunden.")
+                return redirect(url_for("buchung.buchungen_liste"))
 
             # ==============================
             # 1️⃣ HAUPTBUCHUNG (nur Netto!)
@@ -300,7 +318,16 @@ def buchung_neu():
                     steuer_text = "Umsatzsteuer (manuell)"
 
                 steuer_konto = conn.execute(
-                    "SELECT id FROM konten WHERE name = 'Umsatzsteuer/Vorsteuer'",
+                    """
+                        SELECT id
+                        FROM konten
+                        WHERE name = ?
+                        AND user_id = ?
+                    """,
+                    (
+                    "Umsatzsteuer/Vorsteuer",
+                    session["user_id"],
+                    ),
                 ).fetchone()
 
                 if steuer_konto:

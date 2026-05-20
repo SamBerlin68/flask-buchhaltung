@@ -18,7 +18,6 @@ from app.services.csv_service import (
     parse_amount,
 )
 
-from flask import Blueprint, render_template
 
 upload = Blueprint("upload", __name__)
 
@@ -26,26 +25,26 @@ upload = Blueprint("upload", __name__)
 def upload():
         if "user_id" not in session:
             flash("⛔ Du musst eingeloggt sein.")
-            return redirect(url_for("main.login"))
+            return redirect(url_for("auth.login"))
 
         if request.method == "POST":
             try:
                 file = request.files.get("csv_file")
                 if not file or file.filename == "":
                     flash("❌ Keine Datei ausgewählt.")
-                    return redirect(url_for("main.upload"))
+                    return redirect(url_for("upload.upload"))
 
                 raw = file.read()
                 if not raw:
                     flash("❌ Datei ist leer.")
-                    return redirect(url_for("main.upload"))
+                    return redirect(url_for("upload.upload"))
 
                 enc = detect_encoding(raw)
                 try:
                     content = raw.decode(enc, errors="replace")
                 except Exception:
                     flash(f"❌ Fehler beim Dekodieren (Encoding: {enc}).")
-                    return redirect(url_for("main.upload"))
+                    return redirect(url_for("upload.upload"))
 
                 # Delimiter automatisch erkennen (Fallback ';')
                 try:
@@ -81,7 +80,7 @@ def upload():
                 reader = csv.DictReader(stream, delimiter=delimiter)
                 if not reader.fieldnames:
                     flash("❌ CSV hat keine Kopfzeile.")
-                    return redirect(url_for("main.upload"))
+                    return redirect(url_for("upload.upload"))
 
                 fields_norm = {norm(fn): fn for fn in reader.fieldnames}
 
@@ -130,11 +129,11 @@ def upload():
                     flash("ℹ️ Es konnten keine Transaktionen importiert werden. Bitte Delimiter/Spalten prüfen.")
                 else:
                     flash(f"✅ {count} Transaktionen wurden importiert. Jetzt kannst du sie zuordnen.")
-                return redirect(url_for("main.zuordnen"))
+                return redirect(url_for("zuordnung.zuordnen"))
 
             except Exception as e:
                 print(f"❌ Upload-Fehler: {e}")
                 flash(f"❌ Unerwarteter Fehler beim Upload: {e}")
-                return redirect(url_for("main.upload"))
+                return redirect(url_for("upload.upload"))
 
         return render_template("upload.html")
