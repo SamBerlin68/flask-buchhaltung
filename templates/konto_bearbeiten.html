@@ -4,32 +4,31 @@
 {% block content %}
 <h1 class="mb-3">Konto bearbeiten</h1>
 
-<form method="post" action="{{ url_for('konto_bearbeiten', konto_id=konto.id) }}" class="row g-3">
+<form method="post" action="{{ url_for('konto.konto_bearbeiten', konto_id=konto.id) }}" class="row g-3">
   <div class="col-12 col-md-6">
     <label for="name" class="form-label">Name</label>
-    <input type="text" id="name" name="name" class="form-control" required
-           value="{{ konto.name }}">
+    <input type="text" id="name" name="name" class="form-control" required value="{{ konto.name }}">
   </div>
 
   <div class="col-12 col-md-3">
     <label for="typ" class="form-label">Typ</label>
     <select id="typ" name="typ" class="form-select" required>
-      <option value="einnahme" {% if konto.typ == 'einnahme' %}selected{% endif %}>Einnahme</option>
-      <option value="ausgabe"  {% if konto.typ == 'ausgabe'  %}selected{% endif %}>Ausgabe</option>
-      <option value="neutral"  {% if konto.typ == 'neutral'  %}selected{% endif %}>Neutral (Steuer)</option>
+      <option value="einnahme" {% if konto.typ=='einnahme' %}selected{% endif %}>Einnahme</option>
+      <option value="ausgabe" {% if konto.typ=='ausgabe' %}selected{% endif %}>Ausgabe</option>
+      <option value="neutral" {% if konto.typ=='neutral' %}selected{% endif %}>Neutral (Steuer)</option>
     </select>
   </div>
 
   <div class="col-12 col-md-3">
     <label for="kontonummer" class="form-label">Kontonummer (DATEV)</label>
-    <input type="text" id="kontonummer" name="kontonummer" class="form-control"
-           value="{{ konto.kontonummer or '' }}" placeholder="z. B. 1576">
+    <input type="text" id="kontonummer" name="kontonummer" class="form-control" value="{{ konto.kontonummer or '' }}"
+      placeholder="z. B. 1576">
     <div class="form-text">Optional; muss eindeutig sein, wenn gesetzt.</div>
   </div>
 
   <div class="col-12 d-flex gap-2 mt-3">
     <button type="submit" class="btn btn-primary">Speichern</button>
-    <a href="{{ url_for('konto_details', konto_id=konto.id) }}" class="btn btn-secondary">Abbrechen</a>
+    <a href="{{ url_for('konto.konto_details', konto_id=konto.id) }}" class="btn btn-secondary">Abbrechen</a>
   </div>
 </form>
 {% endblock %}

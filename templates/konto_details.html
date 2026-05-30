@@ -5,15 +5,15 @@
 <form method="get" class="mb-3">
   <div class="btn-group">
     <a class="btn btn-outline-primary {% if zeitraum == 'monat' %}active{% endif %}"
-       href="?zeitraum=monat&jahr={{ jahr }}&monat={{ monat }}">
+      href="?zeitraum=monat&jahr={{ jahr }}&monat={{ monat }}">
       Monat
     </a>
     <a class="btn btn-outline-primary {% if zeitraum == 'quartal' %}active{% endif %}"
-       href="?zeitraum=quartal&jahr={{ jahr }}&quartal={{ quartal }}">
+      href="?zeitraum=quartal&jahr={{ jahr }}&quartal={{ quartal }}">
       Quartal
     </a>
     <a class="btn btn-outline-primary {% if zeitraum == 'jahr' %}active{% endif %}"
-       href="?zeitraum=jahr&jahr={{ jahr }}">
+      href="?zeitraum=jahr&jahr={{ jahr }}">
       Jahr
     </a>
   </div>
@@ -21,101 +21,102 @@
 <form method="get" class="mb-2 d-flex gap-2 align-items-center">
   <input type="hidden" name="zeitraum" value="{{ zeitraum }}">
   {% if zeitraum == "monat" %}
-    <input type="hidden" name="monat" value="{{ monat }}">
+  <input type="hidden" name="monat" value="{{ monat }}">
   {% elif zeitraum == "quartal" %}
-    <input type="hidden" name="quartal" value="{{ quartal }}">
+  <input type="hidden" name="quartal" value="{{ quartal }}">
   {% endif %}
 
   <label for="jahr" class="form-label mb-0">Jahr</label>
   <select id="jahr" name="jahr" class="form-select form-select-sm" onchange="this.form.submit()">
     {% for j in jahre %}
-      <option value="{{ j }}" {% if j == jahr %}selected{% endif %}>{{ j }}</option>
+    <option value="{{ j }}" {% if j==jahr %}selected{% endif %}>{{ j }}</option>
     {% endfor %}
   </select>
 </form>
 {% if zeitraum == "monat" %}
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <a class="btn btn-outline-secondary"
-       href="?zeitraum=monat&jahr={{ prev_jahr }}&monat={{ prev_monat }}">
-      ⬅️ {{ "%02d"|format(prev_monat) }}/{{ prev_jahr }}
-    </a>
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <a class="btn btn-outline-secondary" href="?zeitraum=monat&jahr={{ prev_jahr }}&monat={{ prev_monat }}">
+    ⬅️ {{ "%02d"|format(prev_monat) }}/{{ prev_jahr }}
+  </a>
 
-    <strong>{{ "%02d"|format(monat) }}/{{ jahr }}</strong>
+  <strong>{{ "%02d"|format(monat) }}/{{ jahr }}</strong>
 
-    <a class="btn btn-outline-secondary"
-       href="?zeitraum=monat&jahr={{ next_jahr }}&monat={{ next_monat }}">
-      {{ "%02d"|format(next_monat) }}/{{ next_jahr }} ➡️
-    </a>
-  </div>
+  <a class="btn btn-outline-secondary" href="?zeitraum=monat&jahr={{ next_jahr }}&monat={{ next_monat }}">
+    {{ "%02d"|format(next_monat) }}/{{ next_jahr }} ➡️
+  </a>
+</div>
 {% endif %}
 {% if zeitraum == "quartal" %}
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <a class="btn btn-outline-secondary"
-       href="?zeitraum=quartal&jahr={{ prev_q_jahr }}&quartal={{ prev_quartal }}">
-      ⬅️ Q{{ prev_quartal }}/{{ prev_q_jahr }}
-    </a>
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <a class="btn btn-outline-secondary" href="?zeitraum=quartal&jahr={{ prev_q_jahr }}&quartal={{ prev_quartal }}">
+    ⬅️ Q{{ prev_quartal }}/{{ prev_q_jahr }}
+  </a>
 
-    <strong>Q{{ quartal }} / {{ jahr }}</strong>
+  <strong>Q{{ quartal }} / {{ jahr }}</strong>
 
-    <a class="btn btn-outline-secondary"
-       href="?zeitraum=quartal&jahr={{ next_q_jahr }}&quartal={{ next_quartal }}">
-      Q{{ next_quartal }}/{{ next_q_jahr }} ➡️
-    </a>
-  </div>
+  <a class="btn btn-outline-secondary" href="?zeitraum=quartal&jahr={{ next_q_jahr }}&quartal={{ next_quartal }}">
+    Q{{ next_quartal }}/{{ next_q_jahr }} ➡️
+  </a>
+</div>
 {% endif %}
 {% if ist_steuerkonto and steuer_saldo is not none %}
 
-  {% if steuer_saldo < 0 %}
-    <div class="alert alert-danger">
-      <strong>Zahllast:</strong>
-      {{ "%.2f"|format(-steuer_saldo) }} €
-    </div>
+{% if steuer_saldo < 0 %} <div class="alert alert-danger">
+  <strong>Zahllast:</strong>
+  {{ "%.2f"|format(-steuer_saldo) }} €
+  </div>
 
   {% elif steuer_saldo > 0 %}
-    <div class="alert alert-success">
-      <strong>Erstattungsanspruch:</strong>
-      {{ "%.2f"|format(steuer_saldo) }} €
-    </div>
+  <div class="alert alert-success">
+    <strong>Erstattungsanspruch:</strong>
+    {{ "%.2f"|format(steuer_saldo) }} €
+  </div>
 
   {% else %}
-    <div class="alert alert-secondary">
-      Steuerkonto ist ausgeglichen.
-    </div>
+  <div class="alert alert-secondary">
+    Steuerkonto ist ausgeglichen.
+  </div>
   {% endif %}
 
-{% endif %}
-<div class="d-flex align-items-center justify-content-between mb-3">
-<h1 class="h5 mb-0">Konto: {{ konto.name }} <span class="badge bg-secondary">{{ konto.typ }}</span></h1>
-<div>
-<a class="btn btn-sm btn-outline-primary" href="{{ url_for('konto_bearbeiten', konto_id=konto.id) }}">Bearbeiten</a>
-<form class="d-inline" method="post" action="{{ url_for('konto_loeschen', konto_id=konto.id) }}" onsubmit="return confirm('Konto wirklich löschen?');">
-<button class="btn btn-sm btn-outline-danger">Löschen</button>
-</form>
-</div>
-</div>
-<table class="table table-sm table-striped">
-<thead>
-<tr>
-<th>Datum</th><th>Empfänger</th><th>Verwendungszweck</th>
-{% if ist_steuerkonto %}
-  {# Netto-Spalte NICHT anzeigen #}
-{% else %}
-  <th>Netto</th>
-{% endif %}<th class="text-end">Steuer</th>
-</tr>
-</thead>
-<tbody>
-{% for b in buchungen %}
-<tr>
-<td>{{ b.datum }}</td>
-<td>{{ b.empfaenger }}</td>
-<td class="text-wrap">{{ b.verwendungszweck }}</td>
-<td class="text-end">{{ '%.2f'|format(b.betrag_netto) }}</td>
-<td class="text-end">{{ '%.2f'|format(b.steuerbetrag) }}</td>
-</tr>
-{% else %}
-<tr><td colspan="5" class="text-muted">Keine Buchungen vorhanden.</td></tr>
-{% endfor %}
-</tbody>
-</table>
-{% endblock %}
+  {% endif %}
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <h1 class="h5 mb-0">Konto: {{ konto.name }} <span class="badge bg-secondary">{{ konto.typ }}</span></h1>
+    <div>
+      <a class="btn btn-sm btn-outline-primary"
+        href="{{ url_for('konto.konto_bearbeiten', konto_id=konto.id) }}">Bearbeiten</a>
+      <form class="d-inline" method="post" action="{{ url_for('konto.konto_loeschen', konto_id=konto.id) }}"
+        onsubmit="return confirm('Konto wirklich löschen?');">
+        <button class="btn btn-sm btn-outline-danger">Löschen</button>
+      </form>
+    </div>
+  </div>
+  <table class="table table-sm table-striped">
+    <thead>
+      <tr>
+        <th>Datum</th>
+        <th>Empfänger</th>
+        <th>Verwendungszweck</th>
+        {% if ist_steuerkonto %}
+        {# Netto-Spalte NICHT anzeigen #}
+        {% else %}
+        <th>Netto</th>
+        {% endif %}<th class="text-end">Steuer</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for b in buchungen %}
+      <tr>
+        <td>{{ b.datum }}</td>
+        <td>{{ b.empfaenger }}</td>
+        <td class="text-wrap">{{ b.verwendungszweck }}</td>
+        <td class="text-end">{{ '%.2f'|format(b.betrag_netto) }}</td>
+        <td class="text-end">{{ '%.2f'|format(b.steuerbetrag) }}</td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="5" class="text-muted">Keine Buchungen vorhanden.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endblock %}

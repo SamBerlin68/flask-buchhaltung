@@ -1,11 +1,8 @@
 from __future__ import annotations
 
 import os
-import io
-import csv
 import sqlite3
 from datetime import datetime
-from datetime import date
 import pandas as pd
 import json
 
@@ -19,30 +16,24 @@ from app.routes.buchung_routes import buchung
 from app.routes.regel_routes import regel
 from app.routes.report_routes import report
 from app.routes.zuordnung_routes import zuordnung
-
+from app.routes.kunden_routes import kunden
 
 # später absichern
 
 
 from flask import (
     Flask,
-    render_template,
-    request,
     redirect,
     session,
     url_for,
     flash,
 )
 
-
 # chardet ist optional – wenn nicht installiert, fallback auf utf-8
 try:
     import chardet  # type: ignore
 except Exception:
     chardet = None  # type: ignore
-
-
-
 
 
 # -----------------------------------------------------------------------------
@@ -53,11 +44,14 @@ def create_app() -> Flask:
     secret = os.getenv("FLASK_SECRET_KEY", "dev-secret-change-me")
     app.config["SECRET_KEY"] = secret
     if secret == "dev-secret-change-me":
-        print("⚠️ Warnung: FLASK_SECRET_KEY nicht gesetzt – nutze unsicheren Dev-Default.")
+        print(
+            "⚠️ Warnung: FLASK_SECRET_KEY nicht gesetzt – nutze unsicheren Dev-Default."
+        )
     app.config["DATABASE"] = os.getenv("DB_PATH", os.path.abspath("users.db"))
 
     bcrypt.init_app(app)
     app.register_blueprint(auth)
+
     @app.template_filter("euro")
     def format_euro(value):
         try:
@@ -65,13 +59,15 @@ def create_app() -> Flask:
         except (TypeError, ValueError):
             return "0,00 €"
 
-        formatted = f"{abs(value):,.2f}".replace(",", "X").replace(".", ",").replace("X", ".") + " €"
-        
+        formatted = (
+            f"{abs(value):,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+            + " €"
+        )
+
         if value < 0:
             return f'<span class="text-danger">−{formatted}</span>'
 
         return formatted
-
 
     @app.template_filter("percent_de")
     def format_percent(value):
@@ -85,7 +81,6 @@ def create_app() -> Flask:
     # -------------------------------------------------------------------------
     # DB Helpers
     # -------------------------------------------------------------------------
-    
 
     def init_db() -> None:
         with get_db() as conn:
@@ -93,19 +88,16 @@ def create_app() -> Flask:
             # conn.set_trace_callback(print)
 
             # users
-            conn.execute(
-                """
+            conn.execute("""
                 CREATE TABLE IF NOT EXISTS users (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     username TEXT UNIQUE NOT NULL,
                     password TEXT NOT NULL
                 )
-                """
-            )
+                """)
 
             # konten – inkl. kontonummer (DATEV) und optionalem Standard-Steuersatz
-            conn.execute(
-                """
+            conn.execute("""
                 CREATE TABLE IF NOT EXISTS konten (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     name TEXT NOT NULL UNIQUE,
@@ -113,18 +105,14 @@ def create_app() -> Flask:
                     kontonummer TEXT,
                     standard_steuersatz REAL
                 )
-                """
-            )
+                """)
             # Unique-Index auf kontonummer (nur wenn gesetzt)
-            conn.execute(
-                """
+            conn.execute("""
                 CREATE UNIQUE INDEX IF NOT EXISTS ux_konten_kontonummer
                 ON konten(kontonummer) WHERE kontonummer IS NOT NULL
-                """
-            )
+                """)
             # anfragen
-            conn.execute(
-                """
+            conn.execute("""
                 CREATE TABLE IF NOT EXISTS anfragen (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     user_id INTEGER,
@@ -137,11 +125,9 @@ def create_app() -> Flask:
                     raw_data TEXT,
                     created_at TEXT DEFAULT (datetime('now'))
                 )
-                """
-            )
+                """)
             # kontakte
-            conn.execute(   
-                """
+            conn.execute("""
                 CREATE TABLE IF NOT EXISTS kontakte (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     name TEXT,
@@ -152,11 +138,9 @@ def create_app() -> Flask:
                     raw_data TEXT,
                     created_at TEXT DEFAULT (datetime('now'))
                 )
-                """
-            )
+                """)
             # regeln
-            conn.execute(
-                """
+            conn.execute("""
                 CREATE TABLE IF NOT EXISTS regeln (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     suchbegriff TEXT NOT NULL,
@@ -164,12 +148,10 @@ def create_app() -> Flask:
                     steuersatz REAL NOT NULL DEFAULT 19.0,
                     FOREIGN KEY (konto_id) REFERENCES konten(id)
                 )
-                """
-            )
+                """)
 
             # Importtabelle (Rohbank)
-            conn.execute(
-                """
+            conn.execute("""
                 CREATE TABLE IF NOT EXISTS import_transaktionen (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     user_id INTEGER NOT NULL,
@@ -180,12 +162,10 @@ def create_app() -> Flask:
                     verarbeitet INTEGER NOT NULL DEFAULT 0,
                     FOREIGN KEY (user_id) REFERENCES users(id)
                 )
-                """
-            )
+                """)
 
             # Buchungen – Netto + Steuer (separat)
-            conn.execute(
-                """
+            conn.execute("""
                 CREATE TABLE IF NOT EXISTS buchungen (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     user_id INTEGER NOT NULL,
@@ -201,29 +181,37 @@ def create_app() -> Flask:
                     FOREIGN KEY (user_id) REFERENCES users(id),
                     FOREIGN KEY (konto_id) REFERENCES konten(id)
                 )
-                """
-            )
+                """)
 
             # --- Migration: Spalte 'belegnummer' nachziehen (falls noch nicht vorhanden)
             # --- Migrationen für alte DBs: fehlende Spalten in "buchungen" nachziehen
-            cols = [r["name"] for r in conn.execute("PRAGMA table_info(buchungen)").fetchall()]
+            cols = [
+                r["name"]
+                for r in conn.execute("PRAGMA table_info(buchungen)").fetchall()
+            ]
 
             if "betrag_netto" not in cols:
-                conn.execute("ALTER TABLE buchungen ADD COLUMN betrag_netto REAL NOT NULL DEFAULT 0.0")
+                conn.execute(
+                    "ALTER TABLE buchungen ADD COLUMN betrag_netto REAL NOT NULL DEFAULT 0.0"
+                )
 
             if "steuerbetrag" not in cols:
-                conn.execute("ALTER TABLE buchungen ADD COLUMN steuerbetrag REAL NOT NULL DEFAULT 0.0")
+                conn.execute(
+                    "ALTER TABLE buchungen ADD COLUMN steuerbetrag REAL NOT NULL DEFAULT 0.0"
+                )
 
             if "steuersatz" not in cols:
-                conn.execute("ALTER TABLE buchungen ADD COLUMN steuersatz REAL NOT NULL DEFAULT 0.0")
+                conn.execute(
+                    "ALTER TABLE buchungen ADD COLUMN steuersatz REAL NOT NULL DEFAULT 0.0"
+                )
 
             if "created_at" not in cols:
-                conn.execute("ALTER TABLE buchungen ADD COLUMN created_at TEXT NOT NULL DEFAULT (datetime('now'))")
+                conn.execute(
+                    "ALTER TABLE buchungen ADD COLUMN created_at TEXT NOT NULL DEFAULT (datetime('now'))"
+                )
 
             if "belegnummer" not in cols:
                 conn.execute("ALTER TABLE buchungen ADD COLUMN belegnummer TEXT")
-
-
 
             # Veraltete Tabelle bereinigen (best effort)
             try:
@@ -244,7 +232,7 @@ def create_app() -> Flask:
                 )
 
     # Hilfsfunktionen ----------------------------------------------------------
-    
+
     def import_kontakte():
         df = pd.read_excel("Adressen Veranstalter Nachfass.xlsx")
 
@@ -260,7 +248,8 @@ def create_app() -> Flask:
                     else:
                         raw[key] = str(value)
 
-                conn.execute("""
+                conn.execute(
+                    """
                     INSERT INTO kontakte (
                         name,
                         email,
@@ -270,43 +259,28 @@ def create_app() -> Flask:
                         raw_data
                     )
                     VALUES (?, ?, ?, ?, ?, ?)
-                 """, (
-                    str(row.get("Location", "")).strip(),
-                    str(row.get("Email", "")).strip(),
-                    str(row.get("Telefon", "")).strip(),
-                    str(row.get("Ort", "")).strip(),
-                    str(row.get("Stand", "neu")).strip(),
-                    json.dumps(raw, ensure_ascii=False)
-                ))
+                 """,
+                    (
+                        str(row.get("Location", "")).strip(),
+                        str(row.get("Email", "")).strip(),
+                        str(row.get("Telefon", "")).strip(),
+                        str(row.get("Ort", "")).strip(),
+                        str(row.get("Stand", "neu")).strip(),
+                        json.dumps(raw, ensure_ascii=False),
+                    ),
+                )
 
         print("✅ 1:1 Import abgeschlossen")
 
     @app.route("/import_kontakte")
     def import_kontakte_route():
-        #import_kontakte()
-        return "Import deakteviert"    
-
-  
-    
-        
-    
-
-    
-
-   
-    
-  
-
+        # import_kontakte()
+        return "Import deakteviert"
 
     # DB initialisieren
     init_db()
 
-
-    
     # -------------------------- Debug / Tools -----------------------------------
-  
-
-   
 
     @app.route("/reset_all", methods=["POST"], endpoint="reset_all")
     def reset_all():
@@ -328,7 +302,9 @@ def create_app() -> Flask:
 
         flash("🧹 Daten wurden zurückgesetzt.")
         return redirect(url_for("dashboard"))
+
     from app.routes.main_routes import main
+
     app.register_blueprint(main)
     app.register_blueprint(debug)
     app.register_blueprint(upload)
@@ -337,6 +313,7 @@ def create_app() -> Flask:
     app.register_blueprint(regel)
     app.register_blueprint(report)
     app.register_blueprint(zuordnung)
+    app.register_blueprint(kunden)
     return app
 
 

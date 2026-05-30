@@ -18,122 +18,133 @@ from app.services.csv_service import (
     parse_amount,
 )
 
-
 upload = Blueprint("upload", __name__)
 
+
 @upload.route("/upload", methods=["GET", "POST"])
-def upload():
-        if "user_id" not in session:
-            flash("⛔ Du musst eingeloggt sein.")
-            return redirect(url_for("auth.login"))
+def upload_csv():
+    if "user_id" not in session:
+        flash("⛔ Du musst eingeloggt sein.")
+        return redirect(url_for("auth.login"))
 
-        if request.method == "POST":
+    if request.method == "POST":
+        try:
+            file = request.files.get("csv_file")
+            if not file or file.filename == "":
+                flash("❌ Keine Datei ausgewählt.")
+                return redirect(url_for("upload.upload_csv"))
+
+            raw = file.read()
+            if not raw:
+                flash("❌ Datei ist leer.")
+                return redirect(url_for("upload.upload_csv"))
+
+            enc = detect_encoding(raw)
             try:
-                file = request.files.get("csv_file")
-                if not file or file.filename == "":
-                    flash("❌ Keine Datei ausgewählt.")
-                    return redirect(url_for("upload.upload"))
+                content = raw.decode(enc, errors="replace")
+            except Exception:
+                flash(f"❌ Fehler beim Dekodieren (Encoding: {enc}).")
+                return redirect(url_for("upload.upload_csv"))
 
-                raw = file.read()
-                if not raw:
-                    flash("❌ Datei ist leer.")
-                    return redirect(url_for("upload.upload"))
+            # Delimiter automatisch erkennen (Fallback ';')
+            try:
+                sample = "\n".join(content.splitlines()[:5])
+                dialect = csv.Sniffer().sniff(sample, delimiters=",;\t|")
+                delimiter = dialect.delimiter
+            except Exception:
+                delimiter = ";"
 
-                enc = detect_encoding(raw)
-                try:
-                    content = raw.decode(enc, errors="replace")
-                except Exception:
-                    flash(f"❌ Fehler beim Dekodieren (Encoding: {enc}).")
-                    return redirect(url_for("upload.upload"))
+            def norm(s: str) -> str:
+                s = (s or "").strip().lower()
+                repl = str.maketrans(
+                    {
+                        "ä": "ae",
+                        "ö": "oe",
+                        "ü": "ue",
+                        "ß": "ss",
+                        " ": "",
+                        "/": "",
+                        "-": "",
+                        ".": "",
+                        ":": "",
+                    }
+                )
+                return s.translate(repl)
 
-                # Delimiter automatisch erkennen (Fallback ';')
-                try:
-                    sample = "\n".join(content.splitlines()[:5])
-                    dialect = csv.Sniffer().sniff(sample, delimiters=",;\t|")
-                    delimiter = dialect.delimiter
-                except Exception:
-                    delimiter = ";"
+            header_map = {
+                "buchungsdatum": "date",
+                "datum": "date",
+                "wertstellung": "date",
+                "empfaenger": "payee",
+                "empfänger": "payee",
+                "beguenstigter": "payee",
+                "verwendungszweck": "purpose",
+                "verwendungszweckprimanota": "purpose",
+                "verwendungszweck1": "purpose",
+                "betrag": "amount",
+                "umsatz": "amount",
+            }
 
-                def norm(s: str) -> str:
-                    s = (s or "").strip().lower()
-                    repl = str.maketrans({
-                        "ä": "ae", "ö": "oe", "ü": "ue", "ß": "ss",
-                        " ": "", "/": "", "-": "", ".": "", ":": "",
-                    })
-                    return s.translate(repl)
+            stream = io.StringIO(content)
+            reader = csv.DictReader(stream, delimiter=delimiter)
+            if not reader.fieldnames:
+                flash("❌ CSV hat keine Kopfzeile.")
+                return redirect(url_for("upload.upload_csv"))
 
-                header_map = {
-                    "buchungsdatum": "date",
-                    "datum": "date",
-                    "wertstellung": "date",
-                    "empfaenger": "payee",
-                    "empfänger": "payee",
-                    "beguenstigter": "payee",
-                    "verwendungszweck": "purpose",
-                    "verwendungszweckprimanota": "purpose",
-                    "verwendungszweck1": "purpose",
-                    "betrag": "amount",
-                    "umsatz": "amount",
-                }
+            fields_norm = {norm(fn): fn for fn in reader.fieldnames}
 
-                stream = io.StringIO(content)
-                reader = csv.DictReader(stream, delimiter=delimiter)
-                if not reader.fieldnames:
-                    flash("❌ CSV hat keine Kopfzeile.")
-                    return redirect(url_for("upload.upload"))
+            def get(row: dict, key_alias: str) -> str:
+                for norm_name, original in fields_norm.items():
+                    if header_map.get(norm_name) == key_alias:
+                        return (row.get(original) or "").strip()
+                return ""
 
-                fields_norm = {norm(fn): fn for fn in reader.fieldnames}
+            count = 0
+            with get_db() as conn:
+                for row in reader:
+                    try:
+                        datum_raw = get(row, "date")
+                        empfaenger = get(row, "payee")
+                        verwendungszweck = get(row, "purpose")
+                        betrag_raw = get(row, "amount")
 
-                def get(row: dict, key_alias: str) -> str:
-                    for norm_name, original in fields_norm.items():
-                        if header_map.get(norm_name) == key_alias:
-                            return (row.get(original) or "").strip()
-                    return ""
+                        if not (datum_raw and betrag_raw):
+                            continue
 
-                
+                        datum = parse_date_any(datum_raw)
+                        betrag = parse_amount(betrag_raw)
 
-                count = 0
-                with get_db() as conn:
-                    for row in reader:
-                        try:
-                            datum_raw = get(row, "date")
-                            empfaenger = get(row, "payee")
-                            verwendungszweck = get(row, "purpose")
-                            betrag_raw = get(row, "amount")
-
-                            if not (datum_raw and betrag_raw):
-                                continue
-
-                            datum = parse_date_any(datum_raw)
-                            betrag = parse_amount(betrag_raw)
-
-                            conn.execute(
-                                """
+                        conn.execute(
+                            """
                                 INSERT INTO import_transaktionen (user_id, datum, empfaenger, verwendungszweck, betrag, verarbeitet)
                                 VALUES (?,?,?,?,?,0)
                                 """,
-                                (
-                                    session["user_id"],
-                                    datum,
-                                    empfaenger,
-                                    verwendungszweck,
-                                    betrag,
-                                ),
-                            )
-                            count += 1
-                        except Exception as e:
-                            print(f"⚠️ Fehler beim Verarbeiten einer Zeile: {e}")
-                            continue
+                            (
+                                session["user_id"],
+                                datum,
+                                empfaenger,
+                                verwendungszweck,
+                                betrag,
+                            ),
+                        )
+                        count += 1
+                    except Exception as e:
+                        print(f"⚠️ Fehler beim Verarbeiten einer Zeile: {e}")
+                        continue
 
-                if count == 0:
-                    flash("ℹ️ Es konnten keine Transaktionen importiert werden. Bitte Delimiter/Spalten prüfen.")
-                else:
-                    flash(f"✅ {count} Transaktionen wurden importiert. Jetzt kannst du sie zuordnen.")
-                return redirect(url_for("zuordnung.zuordnen"))
+            if count == 0:
+                flash(
+                    "ℹ️ Es konnten keine Transaktionen importiert werden. Bitte Delimiter/Spalten prüfen."
+                )
+            else:
+                flash(
+                    f"✅ {count} Transaktionen wurden importiert. Jetzt kannst du sie zuordnen."
+                )
+            return redirect(url_for("zuordnung.zuordnen"))
 
-            except Exception as e:
-                print(f"❌ Upload-Fehler: {e}")
-                flash(f"❌ Unerwarteter Fehler beim Upload: {e}")
-                return redirect(url_for("upload.upload"))
+        except Exception as e:
+            print(f"❌ Upload-Fehler: {e}")
+            flash(f"❌ Unerwarteter Fehler beim Upload: {e}")
+            return redirect(url_for("upload.upload_csv"))
 
-        return render_template("upload.html")
+    return render_template("upload.html")

@@ -1,0 +1,423 @@
+{% extends "base.html" %}
+
+{% block title %}Kontakt bearbeiten{% endblock %}
+
+{% block content %}
+
+<style>
+
+:root{
+    --sam-dark:#111111;
+    --sam-red:#b61c1c;
+}
+
+.crm-card{
+    border:0;
+    border-radius:22px;
+    overflow:hidden;
+    box-shadow:0 .6rem 1.5rem rgba(0,0,0,.08);
+}
+
+.crm-section{
+    background:#f7f7f7;
+    border:1px solid #e4e4e4;
+    border-radius:18px;
+    padding:1.5rem;
+    margin-bottom:1.5rem;
+}
+
+.crm-section h5{
+    color:#111;
+    font-weight:700;
+    margin-bottom:1rem;
+}
+
+.form-label{
+    font-weight:700;
+    color:#444;
+}
+
+.form-control,
+.form-select{
+    background:#fff;
+    border:1px solid #cfcfcf;
+    border-radius:12px;
+    min-height:48px;
+}
+
+.form-control:focus,
+.form-select:focus{
+    border-color:#b61c1c;
+    box-shadow:0 0 0 .18rem rgba(182,28,28,.15);
+}
+
+.form-check-input{
+    width:1.3rem;
+    height:1.3rem;
+    border:2px solid #777;
+}
+
+.form-check-input:checked{
+    background-color:#b61c1c;
+    border-color:#b61c1c;
+}
+
+.form-check-label{
+    margin-left:.35rem;
+    color:#222;
+}
+
+.crm-header{
+    border-bottom:1px solid #ececec;
+    padding-bottom:1rem;
+    margin-bottom:1.5rem;
+}
+
+</style>
+
+
+<div class="container mt-4 mb-5">
+
+    <div class="card crm-card border-0">
+
+        <div class="card-body p-4">
+
+            <div class="crm-header">
+                <h2 class="mb-1">
+                    Kontakt bearbeiten
+                </h2>
+
+                <div class="text-muted">
+                    CRM-Arbeitsbereich
+                </div>
+            </div>
+
+            <form method="POST">
+
+                <!-- Kontakt -->
+
+                <div class="crm-section">
+
+                    <h5 class="mb-3">
+                        Kontakt
+                    </h5>
+
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">
+                                Veranstalter / Name
+                            </label>
+
+                            <input type="text" name="name" class="form-control form-control-lg"
+                                value="{{ kontakt.name or '' }}">
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">
+                                Straße
+                            </label>
+
+                            <input type="text" name="strasse" class="form-control" value="{{ kontakt.strasse or '' }}">
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label fw-semibold">
+                                PLZ
+                            </label>
+
+                            <input type="text" name="plz" class="form-control" value="{{ kontakt.plz or '' }}">
+                        </div>
+
+                        <div class="col-md-5 mb-3">
+                            <label class="form-label fw-semibold">
+                                Ort
+                            </label>
+
+                            <input type="text" name="ort" class="form-control" value="{{ kontakt.ort or '' }}">
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-semibold">
+                                Ansprechpartner
+                            </label>
+
+                            <input type="text" name="ansprechpartner" class="form-control"
+                                value="{{ kontakt.ansprechpartner or '' }}">
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label fw-semibold">
+                                Funktion
+                            </label>
+
+                            <input type="text" name="funktion" class="form-control"
+                                value="{{ kontakt.funktion or '' }}">
+                        </div>
+
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label fw-semibold">
+                                Telefon
+                            </label>
+
+                            <input type="text" name="telefon" class="form-control" value="{{ kontakt.telefon or '' }}">
+                        </div>
+
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label fw-semibold">
+                                E-Mail
+                            </label>
+
+                            <input type="email" name="email" class="form-control" value="{{ kontakt.email or '' }}">
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- Venue / Spielstätte -->
+
+                <div class="crm-section">
+
+                    <h5 class="mb-3">
+                        Venue / Spielstätte
+                    </h5>
+
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">
+                                Location
+                            </label>
+
+                            <input type="text" name="location" class="form-control"
+                                value="{{ kontakt.location or '' }}">
+                        </div>
+
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label fw-semibold">
+                                Plätze
+                            </label>
+
+                            <input type="text" name="plaetze" class="form-control" value="{{ kontakt.plaetze or '' }}">
+                        </div>
+
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label fw-semibold">
+                                Vertrag
+                            </label>
+
+                            <input type="text" name="vertrag" class="form-control" value="{{ kontakt.vertrag or '' }}">
+                        </div>
+
+                    </div>
+
+                    <div class="mb-2">
+
+                        <label class="form-label fw-semibold">
+                            Besonderheiten
+                        </label>
+
+                        <textarea name="besonderheiten" class="form-control"
+                            rows="3">{{ kontakt.besonderheiten or '' }}</textarea>
+
+                    </div>
+
+                </div>
+
+                <!-- Bearbeitung -->
+
+                <div class="crm-section">
+
+                    <h5 class="mb-3">
+                        Bearbeitungsstand
+                    </h5>
+
+                    <div class="row">
+
+                        <div class="col-md-4 mb-3">
+
+                            <label class="form-label fw-semibold">
+                                Stand
+                            </label>
+
+                            <div class="input-group">
+
+                                <input
+                                    type="date"
+                                    id="stand_datum"
+                                    name="status"
+                                    class="form-control"
+                                    value="{{ kontakt.status or '' }}"
+                                >
+
+                                <button
+                                    type="button"
+                                    class="btn btn-outline-secondary"
+                                    onclick="document.getElementById('stand_datum').value = new Date().toISOString().split('T')[0];">
+                                    Heute
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+
+                            <label class="form-label fw-semibold">
+                                Status
+                            </label>
+
+                            <select name="status_phase" class="form-select">
+
+                                {% set sp = kontakt.status_phase or '' %}
+
+                                <option value="Neu" {% if sp=="Neu" %}selected{% endif %}>Neu</option>
+                                <option value="Erstkontakt" {% if sp=="Erstkontakt" %}selected{% endif %}>Erstkontakt</option>
+                                <option value="Nachfassen" {% if sp=="Nachfassen" %}selected{% endif %}>Nachfassen</option>
+                                <option value="Angebot" {% if sp=="Angebot" %}selected{% endif %}>Angebot</option>
+                                <option value="Vertrag" {% if sp=="Vertrag" %}selected{% endif %}>Vertrag</option>
+                                <option value="Abgeschlossen" {% if sp=="Abgeschlossen" %}selected{% endif %}>Abgeschlossen</option>
+                                <option value="Abgespielt" {% if sp=="Abgespielt" %}selected{% endif %}>Abgespielt</option>
+                                <option value="Kein Interesse" {% if sp=="Kein Interesse" %}selected{% endif %}>Kein Interesse</option>
+
+                            </select>
+
+                        </div>
+
+                        
+<div class="col-md-4 mb-3">
+                            <label class="form-label fw-semibold">
+                                Aufgabe
+                            </label>
+
+                            <select name="aufgabe" class="form-select">
+
+                                {% set a = kontakt.aufgabe or '' %}
+
+                                <option value="" {% if a=="" %}selected{% endif %}>
+                                    –
+                                </option>
+
+                                <option value="Angebot schreiben" {% if a=="Angebot schreiben" %}selected{% endif %}>
+                                    Angebot schreiben
+                                </option>
+
+                                <option value="Nachfassen" {% if a=="Nachfassen" %}selected{% endif %}>
+                                    Nachfassen
+                                </option>
+
+                                <option value="Werbematerial senden" {% if a=="Werbematerial senden" %}selected{% endif %}>
+                                    Werbematerial senden
+                                </option>
+
+                                <option value="BA und Einspieler senden" {% if a=="BA und Einspieler senden" %}selected{% endif %}>
+                                    BA und Einspieler senden
+                                </option>
+
+                                <option value="Vertrag senden" {% if a=="Vertrag senden" %}selected{% endif %}>
+                                    Vertrag senden
+                                </option>
+
+                                <option value="GEMA senden" {% if a=="GEMA senden" %}selected{% endif %}>
+                                    GEMA senden
+                                </option>
+
+                                <option value="Rechnung senden" {% if a=="Rechnung senden" %}selected{% endif %}>
+                                    Rechnung senden
+                                </option>
+
+                            </select>
+                        </div>
+
+                        <div class="col-md-4 mb-3 d-flex align-items-end">
+                            <div class="form-check mb-2">
+
+                                <input
+                                    class="form-check-input"
+                                    type="checkbox"
+                                    name="aufgabe_erledigt"
+                                    value="1"
+                                    id="aufgabe_erledigt"
+                                    {% if kontakt.aufgabe_erledigt %}checked{% endif %}
+                                >
+
+                                <label
+                                    class="form-check-label fw-semibold"
+                                    for="aufgabe_erledigt">
+                                    Aufgabe erledigt
+                                </label>
+
+                            </div>
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+
+                            <label class="form-label fw-semibold">
+                                Fällig bis
+                            </label>
+
+                            <input type="date" name="faellig_am" class="form-control"
+                                value="{{ kontakt.faellig_am or '' }}">
+
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+
+                            <label class="form-label fw-semibold">
+                                Interesse
+                            </label>
+
+                            <input type="text" name="interesse" class="form-control"
+                                value="{{ kontakt.interesse or '' }}">
+                        </div>
+</div>
+
+                    </div>
+
+                </div>
+
+                <!-- Notizen -->
+
+                <div class="crm-section">
+
+                    <h5 class="mb-3">
+                        Verlauf / Notizen
+                    </h5>
+
+                    <textarea name="notizen" class="form-control" rows="14" style="
+                            white-space:pre-wrap;
+                            font-size:0.98rem;
+                        ">{{ kontakt.notizen or '' }}</textarea>
+
+                </div>
+
+                <div class="d-flex gap-2">
+
+                    <button type="submit" class="btn btn-primary px-4">
+                        Speichern
+                    </button>
+
+                    <a href="{{ url_for('kunden.kunden_liste') }}" class="btn btn-outline-secondary">
+                        Zurück
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

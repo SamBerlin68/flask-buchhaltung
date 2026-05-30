@@ -3,53 +3,64 @@
 {% block title %}Konten{% endblock %}
 {% block content %}
 <div class="row g-4">
-<div class="col-12 col-lg-6">
-<h2 class="h5">Konten</h2>
-<table class="table table-sm table-striped">
-<thead><tr><th>Kontonr.</th><th>Name</th><th>Typ</th><th class="text-end">Aktionen</th></tr></thead>
-<tbody>
-{% for k in konten %}
-<tr>
-<td>{{ k.kontonummer or '—' }}</td> 
-<td><a href="{{ url_for('konto_details', konto_id=k.id) }}">{{ k.name }}</a></td>
-<td><span class="badge bg-light text-dark">{{ k.typ }}</span></td>
-<td class="text-end">
-<a class="btn btn-sm btn-outline-primary" href="{{ url_for('konto_bearbeiten', konto_id=k.id) }}">Bearbeiten</a>
-<form class="d-inline" method="post" action="{{ url_for('konto_loeschen', konto_id=k.id) }}" onsubmit="return confirm('Konto wirklich löschen?');">
-<button class="btn btn-sm btn-outline-danger">Löschen</button>
-</form>
-</td>
-</tr>
-{% else %}
-<tr><td colspan="3" class="text-muted">Noch keine Konten angelegt.</td></tr>
-{% endfor %}
-</tbody>
-</table>
-</div>
-<div class="col-12 col-lg-6">
-<h2 class="h5">Neues Konto</h2>
-<form method="post">
-<div class="mb-3">
-<label class="form-label required">Name</label>
-<input type="text" class="form-control" name="name" required>
-</div>
-<div class="mb-3">
-<label class="form-label required">Typ</label>
-<select class="form-select" name="typ" required>
-<option value="">Bitte wählen…</option>
-<option value="einnahme">Einnahme</option>
-<option value="ausgabe">Ausgabe</option>
-<option value="neutral">Neutral (Steuer)</option>
-</select>
-</div>
-<div class="mb-3">
-  <label class="form-label">Kontonummer (DATEV)</label>
-  <input type="text" name="kontonummer" class="form-control" placeholder="z. B. 4400">
-  <div class="form-text">Nur Ziffern, 1–8 Stellen (SKR03/SKR04-konform).</div>
-</div>
+  <div class="col-12 col-lg-6">
+    <h2 class="h5">Konten</h2>
+    <table class="table table-sm table-striped">
+      <thead>
+        <tr>
+          <th>Kontonr.</th>
+          <th>Name</th>
+          <th>Typ</th>
+          <th class="text-end">Aktionen</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for k in konten %}
+        <tr>
+          <td>{{ k.kontonummer or '—' }}</td>
+          <td><a href="{{ url_for('konto.konto_details', konto_id=k.id) }}">{{ k.name }}</a></td>
+          <td><span class="badge bg-light text-dark">{{ k.typ }}</span></td>
+          <td class="text-end">
+            <a class="btn btn-sm btn-outline-primary"
+              href="{{ url_for('konto.konto_bearbeiten', konto_id=k.id) }}">Bearbeiten</a>
+            <form class="d-inline" method="post" action="{{ url_for('konto.konto_loeschen', konto_id=k.id) }}"
+              onsubmit="return confirm('Konto wirklich löschen?');">
+              <button class="btn btn-sm btn-outline-danger">Löschen</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="3" class="text-muted">Noch keine Konten angelegt.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="col-12 col-lg-6">
+    <h2 class="h5">Neues Konto</h2>
+    <form method="post">
+      <div class="mb-3">
+        <label class="form-label required">Name</label>
+        <input type="text" class="form-control" name="name" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label required">Typ</label>
+        <select class="form-select" name="typ" required>
+          <option value="">Bitte wählen…</option>
+          <option value="einnahme">Einnahme</option>
+          <option value="ausgabe">Ausgabe</option>
+          <option value="neutral">Neutral (Steuer)</option>
+        </select>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Kontonummer (DATEV)</label>
+        <input type="text" name="kontonummer" class="form-control" placeholder="z. B. 4400">
+        <div class="form-text">Nur Ziffern, 1–8 Stellen (SKR03/SKR04-konform).</div>
+      </div>
 
-<button class="btn btn-primary">Anlegen</button>
-</form>
-</div>
+      <button class="btn btn-primary">Anlegen</button>
+    </form>
+  </div>
 </div>
 {% endblock %}

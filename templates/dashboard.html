@@ -5,47 +5,51 @@
 
   <div class="row g-3">
 
-  <div class="col-12 col-md-6 col-lg-3">
-    <a class="btn btn-primary w-100" href="{{ url_for('konten') }}">
-      Kontoverwaltung
-    </a>
-  </div>
+    <div class="col-12 col-md-6 col-lg-3">
+      <a class="btn btn-primary w-100" href="{{ url_for('konto.konten') }}">
+        Kontoverwaltung
+      </a>
+    </div>
 
-  <div class="col-12 col-md-6 col-lg-3">
-    <a class="btn btn-secondary w-100" href="{{ url_for('buchungen_liste') }}">
-      Buchungen
-    </a>
-  </div>
+    <div class="col-12 col-md-6 col-lg-3">
+      <a class="btn btn-secondary w-100" href="{{ url_for('buchung.buchungen_liste') }}">
+        Buchungen
+      </a>
+    </div>
 
-  <div class="col-12 col-md-6 col-lg-3">
-    <a class="btn btn-outline-primary w-100" href="{{ url_for('zuordnen') }}">
-      Zuordnung
-    </a>
-  </div>
+    <div class="col-12 col-md-6 col-lg-3">
+      <a class="btn btn-outline-primary w-100" href="{{ url_for('zuordnung.zuordnen') }}">
+        Zuordnung
+      </a>
+    </div>
 
-  <!-- 🔥 Neuer Button -->
-  <div class="col-12 col-md-6 col-lg-3">
-    <a class="btn btn-warning w-100" href="{{ url_for('ustva') }}">
-      USt-Voranmeldung
-    </a>
-  </div>
-  <div class="col-12 col-md-6 col-lg-3">
-  <a class="btn btn-success w-100" href="{{ url_for('bwa') }}">
-    📊 BWA
-  </a>
-</div>
+    <!-- 🔥 Neuer Button -->
+    <div class="col-12 col-md-6 col-lg-3">
+      <a class="btn btn-warning w-100" href="{{ url_for('report.ustva') }}">
+        USt-Voranmeldung
+      </a>
+    </div>
+    <div class="col-12 col-md-6 col-lg-3">
+      <a class="btn btn-success w-100" href="{{ url_for('report.bwa') }}">
+        📊 BWA
+      </a>
+    </div>
+    <div class="col-md-3 mb-3">
+      <a class="btn btn-primary w-100" href="{{ url_for('kunden.kunden_liste') }}">
+        Kundenliste
+      </a>
+    </div>
 
-  <!-- 🟡 Zuordnungsdaten löschen sauber im Grid -->
-  <div class="col-12 col-md-6 col-lg-3">
-    <form method="post"
-          action="{{ url_for('zuordnung_loeschen') }}"
-          onsubmit="return confirm('Nur Zuordnungsdaten (offene Importe) löschen? Buchungen bleiben erhalten.');">
-      <button class="btn btn-outline-warning w-100">
-        Zuordnungsdaten löschen
-      </button>
-    </form>
-  </div>
+    <!-- 🟡 Zuordnungsdaten löschen sauber im Grid -->
+    <div class="col-12 col-md-6 col-lg-3">
+      <form method="post" action="{{ url_for('zuordnung.zuordnung_loeschen') }}"
+        onsubmit="return confirm('Nur Zuordnungsdaten (offene Importe) löschen? Buchungen bleiben erhalten.');">
+        <button class="btn btn-outline-warning w-100">
+          Zuordnungsdaten löschen
+        </button>
+      </form>
+    </div>
 
-</div>
+  </div>
 </div>
 {% endblock %}
