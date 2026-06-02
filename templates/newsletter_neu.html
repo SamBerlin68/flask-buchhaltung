@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+
+  <h1 class="mb-4">➕ Neuer Newsletter-Eintrag</h1>
+
+  <!-- ❌ Fehleranzeige -->
+  {% if errors %}
+    <div class="alert alert-danger">
+      <ul class="mb-0">
+        {% for e in errors %}
+          <li>{{ e }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+
+  <form method="post">
+
+    <div class="mb-3">
+      <label class="form-label">Name</label>
+      <input type="text"
+             name="name"
+             class="form-control"
+             value="{{ request.form.name }}">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Email *</label>
+      <input type="email"
+             name="email"
+             class="form-control"
+             value="{{ request.form.email }}"
+             required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Telefon</label>
+      <input type="text"
+             name="telefon"
+             class="form-control"
+             value="{{ request.form.telefon }}">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Ort</label>
+      <input type="text"
+             name="ort"
+             class="form-control"
+             value="{{ request.form.ort }}">
+    </div>
+
+    <div class="mt-4">
+      <button class="btn btn-success">
+        💾 Speichern
+      </button>
+
+      <a href="{{ url_for('crm.newsletter_liste') }}"
+         class="btn btn-secondary ms-2">
+        Abbrechen
+      </a>
+    </div>
+
+  </form>
+
+</div>
+{% endblock %}

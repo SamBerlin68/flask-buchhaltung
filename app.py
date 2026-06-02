@@ -17,6 +17,7 @@ from app.routes.regel_routes import regel
 from app.routes.report_routes import report
 from app.routes.zuordnung_routes import zuordnung
 from app.routes.kunden_routes import kunden
+from app.routes.crm_routes import crm
 
 # später absichern
 
@@ -314,6 +315,7 @@ def create_app() -> Flask:
     app.register_blueprint(report)
     app.register_blueprint(zuordnung)
     app.register_blueprint(kunden)
+    app.register_blueprint(crm)
     return app
 
 

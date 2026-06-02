@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+
+  <h1 class="mb-4">🧠 CRM</h1>
+
+  <div class="row g-4">
+
+    <div class="col-md-6">
+      <div class="card p-4 text-center">
+        <h2>{{ kontakte }}</h2>
+        <p class="text-secondary">Kontakte gesamt</p>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card p-4 text-center">
+        <h2>{{ kunden }}</h2>
+        <p class="text-secondary">Kunden</p>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="row mt-4 g-3">
+
+    <div class="col-md-6">
+      <a href="{{ url_for('crm.newsletter_liste') }}"
+         class="btn btn-outline-warning w-100">
+        📬 Newsletterliste
+      </a>
+    </div>
+
+    <div class="col-md-6">
+      <a href="{{ url_for('kunden.kunden_liste') }}"
+         class="btn btn-outline-light w-100">
+        📇 Kontakte verwalten
+      </a>
+    </div>
+
+    <div class="col-md-6">
+      <a href="{{ url_for('kunden.kunden_liste') }}"
+         class="btn btn-success w-100">
+        🧑‍💼 Kundenliste
+      </a>
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}

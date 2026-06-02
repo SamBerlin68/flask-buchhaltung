@@ -2,100 +2,276 @@
 
 {% block title %}Kundenliste{% endblock %}
 
+
 {% block content %}
 
 <style>
-    .summary-card {
-        border-radius: 18px;
-        transition: .2s ease;
-    }
 
-    .summary-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .12) !important;
-    }
+.crm-summary .summary-card{
+    border:0;
+    border-radius:22px;
+    overflow:hidden;
+    transition:all .25s ease;
+    min-height:145px;
+    box-shadow:0 .6rem 1.4rem rgba(0,0,0,.10);
+}
 
-    .summary-danger {
-        background: #b61c1c;
-        color: white;
-    }
+.crm-summary .summary-card:hover{
+    transform:translateY(-3px);
+    box-shadow:0 .9rem 2rem rgba(0,0,0,.16);
+}
 
-    .summary-warning {
-        background: #d89a00;
-        color: #111;
-    }
+.summary-danger{
+    background:linear-gradient(145deg,#7f1111,#b61c1c);
+    color:#fff;
+}
 
-    .summary-dark {
-        background: #111;
-        color: white;
-    }
+.summary-warning{
+    background:linear-gradient(145deg,#7d5a00,#c79b17);
+    color:#fff;
+}
 
-    .pagination {
-        margin-top: 2rem;
-    }
+.summary-dark{
+    background:linear-gradient(145deg,#111,#2a2a2a);
+    color:#fff;
+}
+
+.crm-summary small{
+    letter-spacing:.08em;
+    opacity:.9;
+    font-size:.78rem;
+}
+
+.crm-summary h2{
+    font-size:2.25rem;
+    font-weight:700;
+    margin-top:.55rem;
+}
+
+
+
+
+
+.crm-card-header{
+    background:#111;
+    color:#fff;
+    padding:1rem 1.25rem;
+    font-weight:700;
+    letter-spacing:.02em;
+}
+
+.crm-meta{
+    color:#6d6d6d;
+    font-size:.92rem;
+}
+
+.crm-note{
+    background:#f7f7f7;
+    border-left:4px solid #b61c1c;
+    border-radius:12px;
+    padding:1rem;
+    color:#444;
+}
+
+.btn-crm{
+    background:#fff;
+    color:#fff;
+    border:0;
+    border-radius:12px;
+    padding:.55rem 1rem;
+    font-weight:600;
+}
+
+.btn-crm:hover{
+    background:#b61c1c;
+    color:#fff;
+}
+
+:root{
+    --sam-dark:#111111;
+    --sam-red:#b61c1c;
+    --sam-border:#e7e7e7;
+    --sam-bg:#f7f7f7;
+    --sam-text:#3f3f3f;
+}
+
+body{
+    background:#fafafa;
+}
+
+.crm-summary .card{
+    border:0;
+    border-radius:18px;
+    overflow:hidden;
+    box-shadow:0 .45rem 1.2rem rgba(0,0,0,.08);
+}
+
+.crm-card{
+    border: 1px solid #000;
+    border-radius:20px;
+    overflow:hidden;
+    background:white;
+    box-shadow:0 .45rem 1.25rem rgba(0,0,0,.07);
+    transition:all .28s ease;
+    margin-bottom:2.5rem;
+}
+
+.crm-card:hover{
+    transform:translateY(-3px);
+    box-shadow:0 .85rem 2rem rgba(0,0,0,.12);
+}
+
+.crm-header {
+    background: linear-gradient(to right,#111111 0%,#1f1f1f 100%);
+    color: white;
+    padding: 1.1rem 1.25rem;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+}
+.crm-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.crm-card-link:hover {
+    text-decoration: none;
+    color: inherit;
+}
+
+.crm-header h4{
+    margin:0;
+    font-weight:700;
+    letter-spacing:.02em;
+}
+
+.crm-meta{
+    color:#d6d6d6;
+    font-size:.95rem;
+    margin-top:.35rem;
+}
+
+.crm-section{
+    border-top:1px solid var(--sam-border);
+    padding-top:1rem;
+    margin-top:1rem;
+}
+
+.notiz-box{
+    background:var(--sam-bg);
+    border-left:4px solid var(--sam-red);
+    border-radius:14px;
+    padding:1rem;
+    max-height:220px;
+    overflow-y:auto;
+    white-space:pre-wrap;
+    color:var(--sam-text);
+    line-height:1.65;
+    font-size:.93rem;
+}
+
+.badge{
+    border-radius:999px;
+    padding:.5rem .75rem;
+    font-weight:600;
+}
+
+.page-link{
+    color:var(--sam-dark);
+    border-radius:12px!important;
+    margin:0 .2rem;
+}
+
+.page-link:hover{
+    background:var(--sam-dark);
+    color:white;
+}
+.page-item.active .page-link {
+    background: var(--sam-dark);
+    color: white;
+    border-color: var(--sam-dark);
+}
+
+.btn-outline-primary{
+    border-color:#ffffff;
+    color:#ffffff;
+    background:transparent;
+    font-weight:600;
+}
+
+.btn-outline-primary:hover{
+    background:white;
+    color:var(--sam-red);
+}
+
 </style>
 
 
 <div class="container mt-4">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Kundenliste</h2>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Kontaktliste</h2>
 
-        <div class="row crm-summary mb-4 g-3">
+    <a href="{{ url_for('kunden.kunden_neu') }}"
+       class="btn btn-sam">
+        ➕ Neuer Kontakt
+    </a>
+</div>
+    <form method="get" class="mb-4">
 
-            <div class="col-md-4">
-                <a href="{{ url_for('kunden.kunden_liste', filter='ueberfaellig') }}" class="text-decoration-none">
-                    <div class="card shadow-sm border-0 h-100 summary-card summary-danger">
-                        <div class="card-body text-center">
-                            <small class="text-uppercase fw-semibold">Überfällige Aufgaben</small>
-                            <h2 class="mb-0 mt-2">{{ ueberfaellig }}</h2>
-                        </div>
-                    </div>
-                </a>
-            </div>
+  <div class="search-wrapper">
 
-            <div class="col-md-4">
-                <a href="{{ url_for('kunden.kunden_liste', filter='offen') }}" class="text-decoration-none">
-                    <div class="card shadow-sm border-0 h-100 summary-card summary-warning">
-                        <div class="card-body text-center">
-                            <small class="text-uppercase fw-semibold">Offene Aufgaben</small>
-                            <h2 class="mb-0 mt-2">{{ offene_aufgaben }}</h2>
-                        </div>
-                    </div>
-                </a>
-            </div>
+    <span class="search-icon">🔍</span>
 
-            <div class="col-md-4">
-                <a href="{{ url_for('kunden.kunden_liste') }}" class="text-decoration-none">
-                    <div class="card shadow-sm border-0 h-100 summary-card summary-dark">
-                        <div class="card-body text-center">
-                            <small class="text-uppercase fw-semibold">Kontakte</small>
-                            <h2 class="mb-0 mt-2">{{ gesamt_kontakte }}</h2>
-                        </div>
-                    </div>
-                </a>
-            </div>
+    <input type="text"
+           name="q"
+           value="{{ request.args.get('q','') }}"
+           class="search-input"
+           placeholder="Suche nach Name, Ort, Ansprechpartner …">
 
-        </div>
+    <button class="search-btn">
+      Suchen
+    </button>
 
-    </div>
+  </div>
+
+</form>
+
+
+
+
+
+
+
 
     {% if kontakte %}
 
-    {% for k in kontakte %}
+    
+    {% set seite = request.args.get('seite', 1)|int %}
+    
+    
+   
+   
 
-    <div class="card shadow-sm mb-4 border-0">
+    {% for k in kontakte%}
+
+    <a href="{{ url_for('kunden.kunden_bearbeiten', kunden_id=k.id) }}"
+   class="crm-card-link">
+
+  <div class="card crm-card">
+
+    <div class="card-body">
 
         <div class="card-body">
 
-            <div class="d-flex justify-content-between align-items-start mb-3">
+            <div class="crm-header d-flex justify-content-between align-items-start mb-3">
 
                 <div>
                     <h4 class="mb-1">
                         {{ k.name }}
                     </h4>
 
-                    <div class="text-muted">
+                    <div class="crm-meta">
 
                         {% if k.ort %}
                         📍 {{ k.ort }}
@@ -113,40 +289,62 @@
                     </div>
                 </div>
 
-                <div>
-                    <a class="btn btn-sm btn-outline-primary"
-                        href="{{ url_for('kunden.kunden_bearbeiten', kunden_id=k.id) }}">
-                        Bearbeiten
-                    </a>
-                </div>
+                
 
             </div>
 
-            <div class="row mb-3">
+            <div class="row mb-3 crm-section">
 
-                <div class="col-md-4">
-
+                <div class="col-md-3">
                     <strong>Stand</strong><br>
-
                     <span class="badge bg-secondary">
-                        {{ k.status or "offen" }}
+                        {{ k.status[:10] if k.status else "offen" }}
+                    </span>
+                </div>
+
+                <div class="col-md-3">
+                    <strong>Interesse</strong><br>
+                    {{ k.interesse or "-" }}
+                </div>
+
+                <div class="col-md-3">
+                    <strong>Aufgabe</strong><br>
+                    {{ k.aufgabe or "-" }}
+                </div>
+
+                <div class="col-md-3">
+
+                    <strong>Fällig</strong><br>
+
+                    {% if k.faellig_am %}
+
+                    {% if k.faellig_status == "ueberfaellig" %}
+
+                    <span class="badge bg-danger">
+                        🔴 {{ k.faellig_am }}
                     </span>
 
-                </div>
+                    {% elif k.faellig_status == "diese_woche" %}
 
-                <div class="col-md-4">
+                    <span class="badge bg-warning text-dark">
+                        🟠 {{ k.faellig_am }}
+                    </span>
 
-                    <strong>Interesse</strong><br>
 
-                    {{ k.interesse or "-" }}
 
-                </div>
 
-                <div class="col-md-4">
 
-                    <strong>Aufgabe</strong><br>
+                    {% else %}
 
-                    {{ k.aufgabe or "-" }}
+                    <span class="badge bg-secondary">
+                        {{ k.faellig_am }}
+                    </span>
+
+                    {% endif %}
+
+                    {% else %}
+                    -
+                    {% endif %}
 
                 </div>
 
@@ -158,13 +356,14 @@
 
                 <strong>Notizen</strong>
 
-                <div class="mt-2 p-3 bg-light rounded" style="
+                <div class="mt-2 notiz-box" style="
                             max-height:220px;
                             overflow-y:auto;
                             white-space:pre-wrap;
                             font-size:0.95rem;
                         ">
-                    {{ k.notizen }}
+                    {{ k.notizen[-400:] if k.notizen|length > 400 else k.notizen }}{% if k.notizen|length > 400 %}…{%
+                    endif %}
                 </div>
 
             </div>
@@ -174,54 +373,90 @@
         </div>
 
     </div>
+        </div>
+
+  
+</a>
 
     {% endfor %}
 
-    {% if seiten > 1 %}
-    <nav class="mt-4 mb-5">
-        <ul class="pagination justify-content-center">
+    
+{% if seiten > 1 %}
+<nav class="mt-4 mb-5">
+  <ul class="pagination justify-content-center">
 
-            {% if seite > 1 %}
-            <li class="page-item">
-                <a class="page-link" href="{{ url_for('kunden.kunden_liste',
-                    seite=seite-1,
-                    q=request.args.get('q',''),
-                    sort=request.args.get('sort',''),
-                    filter=request.args.get('filter','alle')) }}">
-                    ← Zurück
-                </a>
-            </li>
-            {% endif %}
-
-            <li class="page-item disabled">
-                <span class="page-link">
-                    Seite {{ seite }} von {{ seiten }}
-                </span>
-            </li>
-
-            {% if seite < seiten %} <li class="page-item">
-                <a class="page-link" href="{{ url_for('kunden.kunden_liste',
-                    seite=seite+1,
-                    q=request.args.get('q',''),
-                    sort=request.args.get('sort',''),
-                    filter=request.args.get('filter','alle')) }}">
-                    Weiter →
-                </a>
-                </li>
-                {% endif %}
-        </ul>
-    </nav>
+    {# ← Zurück #}
+    {% if seite > 1 %}
+    <li class="page-item">
+      <a class="page-link"
+         href="{{ url_for('kunden.kunden_liste',
+                          seite=seite-1,
+                          q=request.args.get('q','')) }}">
+        ←
+      </a>
+    </li>
     {% endif %}
 
+    {# Erste Seite #}
+    {% if seite > 3 %}
+    <li class="page-item">
+      <a class="page-link"
+         href="{{ url_for('kunden.kunden_liste', seite=1, q=request.args.get('q','')) }}">
+        1
+      </a>
+    </li>
+    {% if seite > 4 %}
+    <li class="page-item disabled"><span class="page-link">…</span></li>
+    {% endif %}
+    {% endif %}
 
-    {% else %}
+    {# Seiten um aktuelle herum #}
+    {% for i in range(seite-2, seite+3) %}
+      {% if i > 0 and i <= seiten %}
+      <li class="page-item {% if i == seite %}active{% endif %}">
+        <a class="page-link"
+           href="{{ url_for('kunden.kunden_liste',
+                            seite=i,
+                            q=request.args.get('q','')) }}">
+          {{ i }}
+        </a>
+      </li>
+      {% endif %}
+    {% endfor %}
 
+    {# Letzte Seite #}
+    {% if seite < seiten - 2 %}
+      {% if seite < seiten - 3 %}
+      <li class="page-item disabled"><span class="page-link">…</span></li>
+      {% endif %}
+      <li class="page-item">
+        <a class="page-link"
+           href="{{ url_for('kunden.kunden_liste', seite=seiten, q=request.args.get('q','')) }}">
+          {{ seiten }}
+        </a>
+      </li>
+    {% endif %}
+
+    {# → Weiter #}
+    {% if seite < seiten %}
+    <li class="page-item">
+      <a class="page-link"
+         href="{{ url_for('kunden.kunden_liste',
+                          seite=seite+1,
+                          q=request.args.get('q','')) }}">
+        →
+      </a>
+    </li>
+    {% endif %}
+
+  </ul>
+</nav>
+{% endif %}
+{% else %}
     <div class="alert alert-info">
         Keine Kontakte vorhanden.
     </div>
-
-    {% endif %}
-
+{% endif %}
 </div>
 
 {% endblock %}

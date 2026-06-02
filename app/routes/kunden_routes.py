@@ -222,3 +222,53 @@ def kunden_bearbeiten(kunden_id):
         "kunden_bearbeiten.html",
         kontakt=kontakt,
     )
+
+
+@kunden.route("/kunden/neu", methods=["GET", "POST"])
+def kunden_neu():
+
+    if "user_id" not in session:
+        flash("⛔ Bitte einloggen.")
+        return redirect(url_for("auth.login"))
+
+    if request.method == "POST":
+
+        with get_db() as conn:
+            conn.execute(
+                """
+                INSERT INTO kontakte (
+                    name, email, telefon, ort,
+                    plz, strasse, ansprechpartner, funktion,
+                    location, plaetze, besonderheiten,
+                    status, aufgabe, interesse, vertrag, notizen,
+                    user_id
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+                (
+                    request.form.get("name"),
+                    request.form.get("email"),
+                    request.form.get("telefon"),
+                    request.form.get("ort"),
+                    request.form.get("plz"),
+                    request.form.get("strasse"),
+                    request.form.get("ansprechpartner"),
+                    request.form.get("funktion"),
+                    request.form.get("location"),
+                    request.form.get("plaetze"),
+                    request.form.get("besonderheiten"),
+                    request.form.get("status"),
+                    request.form.get("aufgabe"),
+                    request.form.get("interesse"),
+                    request.form.get("vertrag"),
+                    request.form.get("notizen"),
+                    session["user_id"],
+                ),
+            )
+
+            conn.commit()
+
+        flash("✅ Neuer Kontakt angelegt.")
+        return redirect(url_for("kunden.kunden_liste"))
+
+    # 👉 DAS ist entscheidend
+    return render_template("kunden_bearbeiten.html", kontakt={})

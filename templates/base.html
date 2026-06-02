@@ -10,6 +10,7 @@
     <style>
         body {
             padding-top: 4.5rem;
+            background: #f5f5f5;  /* 👉 NEU */
         }
 
         .form-label.required:after {
@@ -21,6 +22,79 @@
         .table-sm th {
             vertical-align: middle;
         }
+        /* 🔍 SAM Search Global */
+
+.search-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: #111;
+  border: 1px solid #2a2a2a;
+  border-radius: 14px;
+  padding: 6px 8px;
+  transition: all 0.2s ease;
+}
+
+.search-wrapper:focus-within {
+  border-color: #fff;
+  box-shadow: 0 0 0 1px #fff;
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  color: #777;
+  font-size: 14px;
+}
+
+.search-input {
+  flex: 1;
+  background: #fff;
+  border: none;
+  color: #c00000;
+  padding: 8px 8px 8px 34px;
+  font-size: 15px;
+  border-radius: 10px;
+}
+
+.search-input::placeholder {
+  color: #666;
+}
+
+.search-input:focus {
+  outline: none;
+}
+
+.search-btn {
+  background: #222;
+  color: #f5f5f5;
+  border: none;
+  border-radius: 10px;
+  padding: 6px 14px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  margin-left: 12px;
+}
+
+.search-btn:hover {
+  background: #f5f5f5;
+  color: #b61c1c;
+}
+.btn-sam {
+    background: #ffffff;
+    color: #b61c1c;
+    border: 2px solid #b61c1c;
+    border-radius: 12px;
+    padding: 0.55rem 1.1rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.btn-sam:hover {
+    background: #b61c1c;
+    color: #ffffff;
+    border-color: #b61c1c;
+}
     </style>
 </head>
 
@@ -44,62 +118,48 @@
 
                     {% if session.get('user_id') %}
 
-                        {% if request.blueprint == "kunden" %}
+                    {% if request.blueprint == "kunden" %}
 
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ url_for('main.dashboard') }}">
-                                    Dashboard
-                                </a>
-                            </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('main.dashboard') }}">
+                            Dashboard
+                        </a>
+                    </li>
 
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ url_for('kunden.kunden_liste') }}">
-                                    Aufgaben
-                                </a>
-                            </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('kunden.kunden_liste') }}">
+                            Aufgaben
+                        </a>
+                    </li>
 
-                        {% else %}
+                    {% else %}
 
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ url_for('upload.upload_csv') }}">Upload</a>
-                            </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('upload.upload_csv') }}">Upload</a>
+                    </li>
 
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ url_for('zuordnung.zuordnen') }}">Zuordnen</a>
-                            </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('zuordnung.zuordnen') }}">Zuordnen</a>
+                    </li>
 
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ url_for('buchung.buchungen_liste') }}">Buchungen</a>
-                            </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('buchung.buchungen_liste') }}">Buchungen</a>
+                    </li>
 
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ url_for('konto.konten') }}">Konten</a>
-                            </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('konto.konten') }}">Konten</a>
+                    </li>
 
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ url_for('regel.regeln') }}">Regeln</a>
-                            </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('regel.regeln') }}">Regeln</a>
+                    </li>
 
-                        {% endif %}
+                    {% endif %}
 
                     {% endif %}
 
                 </ul>
-                {% if request.blueprint == "kunden" %}
-
-                    <form class="d-flex me-3"
-                          method="GET"
-                          action="{{ url_for('kunden.kunden_liste') }}">
-
-                        <input class="form-control form-control-sm"
-                               type="search"
-                               name="q"
-                               placeholder="Suche…"
-                               value="{{ request.args.get('q','') }}">
-
-                    </form>
-
-                    {% endif %}
+                
 
                 <ul class="navbar-nav">
                     {% if session.get('user_id') %}

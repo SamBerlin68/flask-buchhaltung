@@ -73,6 +73,41 @@
     margin-bottom:1.5rem;
 }
 
+.btn-sam{
+    background:linear-gradient(145deg,#111,#2a2a2a);
+    color:#fff;
+    border:0;
+    border-radius:14px;
+    padding:.8rem 1.4rem;
+    font-weight:700;
+    letter-spacing:.02em;
+    box-shadow:0 .45rem 1rem rgba(0,0,0,.12);
+    transition:all .25s ease;
+}
+
+.btn-sam:hover{
+    background:linear-gradient(145deg,#8d1414,#b61c1c);
+    color:#fff;
+    transform:translateY(-1px);
+    box-shadow:0 .7rem 1.4rem rgba(0,0,0,.16);
+}
+
+.btn-sam-outline{
+    background:#fff;
+    color:#111;
+    border:1px solid #d6d6d6;
+    border-radius:14px;
+    padding:.8rem 1.4rem;
+    font-weight:600;
+    transition:all .25s ease;
+}
+
+.btn-sam-outline:hover{
+    background:#111;
+    color:#fff;
+    border-color:#111;
+}
+
 </style>
 
 
@@ -261,7 +296,7 @@
 
                                 <button
                                     type="button"
-                                    class="btn btn-outline-secondary"
+                                    class="btn btn-sam-outline"
                                     onclick="document.getElementById('stand_datum').value = new Date().toISOString().split('T')[0];">
                                     Heute
                                 </button>
@@ -402,11 +437,11 @@
 
                 <div class="d-flex gap-2">
 
-                    <button type="submit" class="btn btn-primary px-4">
+                    <button type="submit" class="btn btn-sam">
                         Speichern
                     </button>
 
-                    <a href="{{ url_for('kunden.kunden_liste') }}" class="btn btn-outline-secondary">
+                    <a href="{{ url_for('kunden.kunden_liste') }}" class="btn btn-sam">
                         Zurück
                     </a>
 
