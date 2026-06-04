@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}Aktive Kunden{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <h2>
+            Aktive Kunden
+        </h2>
+
+        <a href="{{ url_for('kunden.kunden_liste') }}"
+           class="btn btn-outline-dark">
+            Zurück
+        </a>
+
+    </div>
+
+    <div class="card shadow-sm">
+
+        <div class="card-body">
+
+            <table class="table table-hover">
+
+                <thead>
+
+                    <tr>
+                        <th>Kundennr.</th>
+                        <th>Name</th>
+                        <th>Ort</th>
+                        <th>Ansprechpartner</th>
+                        <th></th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for k in kunden %}
+
+                    <tr>
+
+                        <td>
+                            <strong>{{ k.kundennummer }}</strong>
+                        </td>
+
+                        <td>
+                            {{ k.name }}
+                        </td>
+
+                        <td>
+                            {{ k.ort }}
+                        </td>
+
+                        <td>
+                            {{ k.ansprechpartner }}
+                        </td>
+
+                        <td>
+
+                            <a href="{{ url_for('kunden.kunden_bearbeiten', kunden_id=k.id) }}"
+                               class="btn btn-sm btn-sam">
+                                Öffnen
+                            </a>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

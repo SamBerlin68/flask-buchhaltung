@@ -115,7 +115,7 @@
 
     <div class="card crm-card border-0">
 
-        <div class="card-body p-4">
+        <div class="card-body p-5">
 
             <div class="crm-header">
                 <h2 class="mb-1">
@@ -435,19 +435,71 @@
 
                 </div>
 
-                <div class="d-flex gap-2">
+                
+<div class="crm-section">
 
-                    <button type="submit" class="btn btn-sam">
-                        Speichern
-                    </button>
+    {% if kontakt.ist_kunde %}
 
-                    <a href="{{ url_for('kunden.kunden_liste') }}" class="btn btn-sam">
-                        Zurück
-                    </a>
+    <div class="alert alert-success text-center mb-4">
 
-                </div>
+        <i class="bi bi-person-check-fill"></i>
+        <strong>Aktiver Kunde</strong>
 
-            </form>
+        {% if kontakt.kundennummer %}
+            | Kundennummer: {{ kontakt.kundennummer }}
+        {% endif %}
+
+    </div>
+
+    {% else %}
+
+    <div class="alert alert-warning text-center mb-4">
+
+        <i class="bi bi-person"></i>
+        <strong>Interessent</strong>
+
+        | Noch nicht als Kunde aktiviert
+
+    </div>
+
+    {% endif %}
+
+    <div class="d-flex justify-content-center gap-3 flex-wrap">
+
+        <button type="submit"
+                class="btn btn-sam px-4">
+            <i class="bi bi-floppy-fill"></i>
+            Speichern
+        </button>
+
+        <button type="submit"
+                name="aktion"
+                value="aktivieren"
+                class="btn btn-success px-4">
+            <i class="bi bi-person-check-fill"></i>
+            Kunde aktivieren
+        </button>
+
+        <button type="submit"
+                name="aktion"
+                value="loeschen"
+                class="btn btn-danger px-4"
+                onclick="return confirm('Kontakt wirklich löschen?');">
+            <i class="bi bi-trash-fill"></i>
+            Löschen
+        </button>
+
+        <a href="{{ url_for('kunden.kunden_liste') }}"
+           class="btn btn-outline-dark px-4">
+            <i class="bi bi-arrow-left"></i>
+            Zurück
+        </a>
+
+    </div>
+
+</div>
+
+</form>
 
         </div>
 

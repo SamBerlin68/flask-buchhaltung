@@ -13,6 +13,39 @@ from datetime import date, datetime, timedelta
 kunden = Blueprint("kunden", __name__)
 
 
+@kunden.route("/kunden/aktiv")
+def aktive_kunden():
+
+    if "user_id" not in session:
+        flash("⛔ Bitte einloggen.")
+        return redirect(url_for("auth.login"))
+
+    with get_db() as conn:
+        kunden_aktiv = conn.execute(
+            """
+            SELECT
+                id,
+                kundennummer,
+                name,
+                ort,
+                email,
+                telefon,
+                ansprechpartner,
+                status_phase
+            FROM kontakte
+            WHERE user_id = ?
+              AND ist_kunde = 1
+            ORDER BY kundennummer ASC
+            """,
+            (session["user_id"],),
+        ).fetchall()
+
+    return render_template(
+        "aktive_kunden.html",
+        kunden=kunden_aktiv,
+    )
+
+
 @kunden.route("/kunden")
 def kunden_liste():
 
@@ -40,6 +73,8 @@ def kunden_liste():
         sql = """
             SELECT
                 id,
+                ist_kunde,
+                kundennummer,
                 name,
                 ort,
                 email,
@@ -117,6 +152,14 @@ def kunden_liste():
             if not k.get("aufgabe") or k.get("aufgabe_erledigt"):
                 continue
 
+        elif filter_typ == "kunden":
+            if not k.get("ist_kunde"):
+                continue
+
+        elif filter_typ == "interessenten":
+            if k.get("ist_kunde"):
+                continue
+
         kontakte_liste.append(k)
 
     # Pagination
@@ -167,6 +210,54 @@ def kunden_bearbeiten(kunden_id):
 
         if request.method == "POST":
 
+            aktion = request.form.get("aktion")
+
+            if aktion == "aktivieren":
+
+                if kontakt["ist_kunde"] and kontakt["kundennummer"]:
+                    flash(
+                        f"ℹ️ Kunde ist bereits aktiv. Kundennummer: {kontakt['kundennummer']}"
+                    )
+                    return redirect(
+                        url_for("kunden.kunden_bearbeiten", kunden_id=kunden_id)
+                    )
+
+                letzte_nummer = conn.execute(
+                    """
+                    SELECT MAX(kundennummer)
+                    FROM kontakte
+                    WHERE user_id = ?
+                      AND kundennummer IS NOT NULL
+                    """,
+                    (session["user_id"],),
+                ).fetchone()[0]
+
+                neue_nummer = letzte_nummer + 1 if letzte_nummer else 10000
+
+                conn.execute(
+                    """
+                    UPDATE kontakte
+                    SET
+                        ist_kunde = 1,
+                        kundennummer = ?,
+                        status_phase = 'Aktiver Kunde'
+                    WHERE id = ?
+                      AND user_id = ?
+                    """,
+                    (
+                        neue_nummer,
+                        kunden_id,
+                        session["user_id"],
+                    ),
+                )
+
+                conn.commit()
+
+                flash(f"✅ Kunde aktiviert. Kundennummer: {neue_nummer}")
+                return redirect(
+                    url_for("kunden.kunden_bearbeiten", kunden_id=kunden_id)
+                )
+
             conn.execute(
                 """
                 UPDATE kontakte
@@ -183,7 +274,10 @@ def kunden_bearbeiten(kunden_id):
                     plaetze = ?,
                     besonderheiten = ?,
                     status = ?,
+                    status_phase = ?,
                     aufgabe = ?,
+                    aufgabe_erledigt = ?,
+                    faellig_am = ?,
                     interesse = ?,
                     vertrag = ?,
                     notizen = ?
@@ -203,7 +297,10 @@ def kunden_bearbeiten(kunden_id):
                     request.form.get("plaetze"),
                     request.form.get("besonderheiten"),
                     request.form.get("status"),
+                    request.form.get("status_phase"),
                     request.form.get("aufgabe"),
+                    1 if request.form.get("aufgabe_erledigt") else 0,
+                    request.form.get("faellig_am"),
                     request.form.get("interesse"),
                     request.form.get("vertrag"),
                     request.form.get("notizen"),
@@ -215,7 +312,6 @@ def kunden_bearbeiten(kunden_id):
             conn.commit()
 
             flash("✅ Kontakt gespeichert.")
-
             return redirect(url_for("kunden.kunden_liste"))
 
     return render_template(

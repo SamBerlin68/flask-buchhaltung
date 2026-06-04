@@ -239,12 +239,33 @@ body{
 
 
 
+<div class="d-flex gap-2 flex-wrap mb-4">
+
+    <a href="{{ url_for('kunden.kunden_liste', filter='alle', q=request.args.get('q','')) }}"
+       class="btn btn-sm {% if filter_typ == 'alle' %}btn-dark{% else %}btn-outline-dark{% endif %}">
+        Alle
+    </a>
+
+    <a href="{{ url_for('kunden.kunden_liste', filter='kunden', q=request.args.get('q','')) }}"
+       class="btn btn-sm {% if filter_typ == 'kunden' %}btn-dark{% else %}btn-outline-dark{% endif %}">
+        Aktive Kunden
+    </a>
+
+    <a href="{{ url_for('kunden.kunden_liste', filter='interessenten', q=request.args.get('q','')) }}"
+       class="btn btn-sm {% if filter_typ == 'interessenten' %}btn-dark{% else %}btn-outline-dark{% endif %}">
+        Interessenten
+    </a>
+
+</div>
+
+{% if kontakte %}
 
 
 
 
 
-    {% if kontakte %}
+
+    
 
     
     {% set seite = request.args.get('seite', 1)|int %}
@@ -276,6 +297,19 @@ body{
                         {% if k.ort %}
                         📍 {{ k.ort }}
                         {% endif %}
+                        {% if k.ist_kunde %}
+
+                    <span class="badge bg-success mb-2">
+                         Kunde #{{ k.kundennummer }}
+                    </span><br>
+
+                    {% else %}
+
+                    <span class="badge bg-secondary mb-2">
+                        Interessent
+                    </span><br>
+
+                    {% endif %}
 
                         {% if k.ansprechpartner %}
                         <br>
