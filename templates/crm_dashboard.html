@@ -80,6 +80,48 @@
     </div>
 
   </div>
+<div class="card mt-5">
+  <div class="card-header">
+    <h4 class="mb-0">🔴 Meine nächsten Aufgaben</h4>
+  </div>
 
+  <div class="card-body">
+
+    {% if naechste_aufgaben %}
+
+      <div class="list-group">
+
+        {% for a in naechste_aufgaben %}
+
+          <a href="{{ url_for('kunden.kunden_bearbeiten', kunden_id=a.id) }}"
+             class="list-group-item list-group-item-action">
+
+            <strong>{{ a.name }}</strong><br>
+
+            {{ a.aufgabe }}
+
+            {% if a.faellig_am %}
+              <br>
+              <small class="text-danger">
+                fällig am {{ a.faellig_am }}
+              </small>
+            {% endif %}
+
+          </a>
+
+        {% endfor %}
+
+      </div>
+
+    {% else %}
+
+      <p class="text-muted mb-0">
+        Keine offenen Aufgaben vorhanden.
+      </p>
+
+    {% endif %}
+
+  </div>
+</div>
 </div>
 {% endblock %}

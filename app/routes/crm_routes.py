@@ -77,6 +77,24 @@ def dashboard():
             (user_id,),
         ).fetchone()[0]
 
+        naechste_aufgaben = conn.execute(
+            """
+            SELECT
+                id,
+                name,
+                aufgabe,
+                faellig_am
+            FROM kontakte
+            WHERE user_id = ?
+              AND aufgabe IS NOT NULL
+              AND aufgabe != ''
+              AND COALESCE(aufgabe_erledigt,0) = 0
+            ORDER BY faellig_am ASC
+            LIMIT 10
+            """,
+            (user_id,),
+        ).fetchall()
+
     return render_template(
         "crm_dashboard.html",
         kontakte=kontakte,
@@ -84,6 +102,7 @@ def dashboard():
         interessenten=interessenten,
         offene_aufgaben=offene_aufgaben,
         ueberfaellige_aufgaben=ueberfaellige_aufgaben,
+        naechste_aufgaben=naechste_aufgaben,
     )
 
 
