@@ -144,6 +144,7 @@ def kunden_liste():
             except ValueError:
                 pass
 
+        print(k["name"], k.get("faellig_am"), k["faellig_status"])
         if filter_typ == "ueberfaellig":
             if k["faellig_status"] != "ueberfaellig":
                 continue

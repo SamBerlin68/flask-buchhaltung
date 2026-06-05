@@ -4,6 +4,8 @@ from flask import (
     redirect,
     url_for,
     request,
+    session,
+    flash,
 )
 from app.db import get_db
 
@@ -12,14 +14,77 @@ crm = Blueprint("crm", __name__)
 
 @crm.route("/crm")
 def dashboard():
-    with get_db() as conn:
-        kontakte = conn.execute("SELECT COUNT(*) FROM kontakte").fetchone()[0]
+    if "user_id" not in session:
+        flash("⛔ Bitte einloggen.")
+        return redirect(url_for("auth.login"))
 
-        kunden = conn.execute(
-            "SELECT COUNT(*) FROM kontakte WHERE ist_kunde = 1"
+    user_id = session["user_id"]
+
+    with get_db() as conn:
+        kontakte = conn.execute(
+            """
+        SELECT COUNT(*)
+        FROM kontakte
+        WHERE user_id = ?
+        """,
+            (user_id,),
         ).fetchone()[0]
 
-    return render_template("crm_dashboard.html", kontakte=kontakte, kunden=kunden)
+        kunden = conn.execute(
+            """
+            SELECT COUNT(*)
+            FROM kontakte
+            WHERE user_id = ?
+            AND ist_kunde = 1
+            """,
+            (user_id,),
+        ).fetchone()[0]
+
+        interessenten = conn.execute(
+            """
+            SELECT COUNT(*)
+            FROM kontakte
+            WHERE user_id = ?
+              AND ist_kunde = 0
+            """,
+            (user_id,),
+        ).fetchone()[0]
+
+        offene_aufgaben = conn.execute(
+            """
+            SELECT COUNT(*)
+            FROM kontakte
+            WHERE user_id = ?
+              AND aufgabe IS NOT NULL
+              AND aufgabe != ''
+              AND COALESCE(aufgabe_erledigt,0) = 0
+            """,
+            (user_id,),
+        ).fetchone()[0]
+
+        ueberfaellige_aufgaben = conn.execute(
+            """
+            SELECT COUNT(*)
+            FROM kontakte
+            WHERE user_id = ?
+              AND faellig_am IS NOT NULL
+              AND faellig_am != ''
+              AND faellig_am < DATE('now')
+              AND aufgabe IS NOT NULL
+              AND aufgabe != ''
+              AND COALESCE(aufgabe_erledigt,0) = 0
+            """,
+            (user_id,),
+        ).fetchone()[0]
+
+    return render_template(
+        "crm_dashboard.html",
+        kontakte=kontakte,
+        kunden=kunden,
+        interessenten=interessenten,
+        offene_aufgaben=offene_aufgaben,
+        ueberfaellige_aufgaben=ueberfaellige_aufgaben,
+    )
 
 
 @crm.route("/crm/newsletter")

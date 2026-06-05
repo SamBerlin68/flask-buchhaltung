@@ -5,23 +5,56 @@
 
   <h1 class="mb-4">🧠 CRM</h1>
 
-  <div class="row g-4">
+<div class="row g-4">
 
-    <div class="col-md-6">
-      <div class="card p-4 text-center">
-        <h2>{{ kontakte }}</h2>
-        <p class="text-secondary">Kontakte gesamt</p>
-      </div>
-    </div>
-
-    <div class="col-md-6">
-      <div class="card p-4 text-center">
+  <div class="col-md-3">
+    <a href="{{ url_for('kunden.kunden_liste', filter='kunden') }}"
+       class="text-decoration-none">
+      <div class="card p-4 text-center h-100 border-success">
         <h2>{{ kunden }}</h2>
-        <p class="text-secondary">Kunden</p>
+        <p class="text-success mb-0">Aktive Kunden</p>
       </div>
-    </div>
-
+    </a>
   </div>
+
+  <div class="col-md-3">
+    <a href="{{ url_for('kunden.kunden_liste', filter='interessenten') }}"
+       class="text-decoration-none">
+      <div class="card p-4 text-center h-100">
+        <h2>{{ interessenten }}</h2>
+        <p class="text-secondary mb-0">Interessenten</p>
+      </div>
+    </a>
+  </div>
+
+  <div class="col-md-3">
+    <a href="{{ url_for('kunden.kunden_liste', filter='offen') }}"
+       class="text-decoration-none">
+      <div class="card p-4 text-center h-100 border-warning">
+        <h2>{{ offene_aufgaben }}</h2>
+        <p class="text-warning mb-0">Offene Aufgaben</p>
+      </div>
+    </a>
+  </div>
+
+  <div class="col-md-3">
+    <a href="{{ url_for('kunden.kunden_liste', filter='ueberfaellig') }}"
+       class="text-decoration-none">
+
+        <div class="card p-4 text-center h-100 border-danger">
+
+            <h2>{{ ueberfaellige_aufgaben }}</h2>
+
+            <p class="text-danger mb-0">
+                Überfällige Aufgaben
+            </p>
+
+        </div>
+
+    </a>
+</div>
+
+</div>
 
   <div class="row mt-4 g-3">
 
