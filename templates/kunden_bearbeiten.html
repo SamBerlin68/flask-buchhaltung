@@ -316,13 +316,12 @@
                                 {% set sp = kontakt.status_phase or '' %}
 
                                 <option value="Neu" {% if sp=="Neu" %}selected{% endif %}>Neu</option>
-                                <option value="Erstkontakt" {% if sp=="Erstkontakt" %}selected{% endif %}>Erstkontakt</option>
+                                <option value="Interesse" {% if sp=="Interesse" %}selected{% endif %}>Interesse</option>
+                                <option value="Angebot versendet" {% if sp=="Angebot versendet" %}selected{% endif %}>Angebot versendet </option>
                                 <option value="Nachfassen" {% if sp=="Nachfassen" %}selected{% endif %}>Nachfassen</option>
-                                <option value="Angebot" {% if sp=="Angebot" %}selected{% endif %}>Angebot</option>
-                                <option value="Vertrag" {% if sp=="Vertrag" %}selected{% endif %}>Vertrag</option>
-                                <option value="Abgeschlossen" {% if sp=="Abgeschlossen" %}selected{% endif %}>Abgeschlossen</option>
-                                <option value="Abgespielt" {% if sp=="Abgespielt" %}selected{% endif %}>Abgespielt</option>
-                                <option value="Kein Interesse" {% if sp=="Kein Interesse" %}selected{% endif %}>Kein Interesse</option>
+                                <option value="Vertrag versendet" {% if sp=="Vertrag versendet" %}selected{% endif %}>Vertrag versendet </option>
+                                <option value="Aktiver Kunde" {% if sp=="Aktiver Kunde" %}selected{% endif %}>Aktiver Kunde</option>
+                             
 
                             </select>
 

@@ -50,6 +50,56 @@ def dashboard():
             (user_id,),
         ).fetchone()[0]
 
+        neu = conn.execute(
+            """
+            SELECT COUNT(*)
+            FROM kontakte
+            WHERE user_id = ?
+            AND status_phase = 'Neu'
+            """,
+            (user_id,),
+        ).fetchone()[0]
+
+        interesse = conn.execute(
+            """
+            SELECT COUNT(*)
+            FROM kontakte
+            WHERE user_id = ?
+            AND status_phase = 'Interesse'
+            """,
+            (user_id,),
+        ).fetchone()[0]
+
+        angebot = conn.execute(
+            """
+            SELECT COUNT(*)
+            FROM kontakte
+            WHERE user_id = ?
+            AND status_phase = 'Angebot versendet'
+            """,
+            (user_id,),
+        ).fetchone()[0]
+
+        nachfassen = conn.execute(
+            """
+            SELECT COUNT(*)
+            FROM kontakte
+            WHERE user_id = ?
+            AND status_phase = 'Nachfassen'
+            """,
+            (user_id,),
+        ).fetchone()[0]
+
+        vertrag = conn.execute(
+            """
+            SELECT COUNT(*)
+            FROM kontakte
+            WHERE user_id = ?
+            AND status_phase = 'Vertrag versendet'
+            """,
+            (user_id,),
+        ).fetchone()[0]
+
         offene_aufgaben = conn.execute(
             """
             SELECT COUNT(*)
@@ -100,6 +150,11 @@ def dashboard():
         kontakte=kontakte,
         kunden=kunden,
         interessenten=interessenten,
+        neu=neu,
+        interesse=interesse,
+        angebot=angebot,
+        nachfassen=nachfassen,
+        vertrag=vertrag,
         offene_aufgaben=offene_aufgaben,
         ueberfaellige_aufgaben=ueberfaellige_aufgaben,
         naechste_aufgaben=naechste_aufgaben,

@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 360" role="img" aria-labelledby="title desc">
+  <title id="title">CRM Workflow Illustration</title>
+  <desc id="desc">A clean customer journey illustration showing contact, offer, follow-up, contract and customer stages.</desc>
+
+  <defs>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="14" stdDeviation="18" flood-color="#111111" flood-opacity="0.12"/>
+    </filter>
+    <linearGradient id="cardGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#f7f7f7"/>
+    </linearGradient>
+    <linearGradient id="redGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#d11d1d"/>
+      <stop offset="1" stop-color="#8f1111"/>
+    </linearGradient>
+    <linearGradient id="greenGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1fa34a"/>
+      <stop offset="1" stop-color="#0f7a31"/>
+    </linearGradient>
+    <style>
+      .bg-shape{fill:#f3f4f6;}
+      .line{fill:none;stroke:#d8dbe0;stroke-width:5;stroke-linecap:round;stroke-dasharray:10 12;}
+      .stage-card{fill:url(#cardGradient);stroke:#e8e8e8;stroke-width:1.5;filter:url(#softShadow);}
+      .muted{fill:#6b7280;}
+      .dark{fill:#111111;}
+      .red{fill:#b61c1c;}
+      .white{fill:#ffffff;}
+      .blue-soft{fill:#eaf2ff;}
+      .orange-soft{fill:#fff3df;}
+      .red-soft{fill:#ffe8e8;}
+      .gray-soft{fill:#f1f2f4;}
+      .green-soft{fill:#e7f6eb;}
+      .stroke-blue{stroke:#2674d9;}
+      .stroke-orange{stroke:#f59e0b;}
+      .stroke-red{stroke:#d21d1d;}
+      .stroke-gray{stroke:#6b7280;}
+      .stroke-green{stroke:#14863a;}
+    </style>
+  </defs>
+
+  <path class="bg-shape" d="M69 236C10 187 58 80 159 79c71-1 92 45 147 40 70-6 77-84 168-91 93-7 119 68 186 56 74-14 104-75 173-54 75 23 94 124 45 193-58 83-205 65-339 78-187 18-357 40-470-65Z" opacity="0.72"/>
+
+  <path class="line" d="M136 181 C232 121 315 244 407 181 S586 122 683 181 S790 241 843 154"/>
+
+  <!-- stage 1 -->
+  <g transform="translate(68 126)">
+    <rect class="stage-card" width="120" height="120" rx="30"/>
+    <circle cx="60" cy="53" r="31" class="blue-soft"/>
+    <path d="M60 72c0-31 17-48 42-49-4 25-19 39-42 49Z" fill="#2674d9" opacity=".95"/>
+    <path d="M61 72c-4-25-18-39-42-49 25 1 42 18 42 49Z" fill="#145db1" opacity=".9"/>
+    <path d="M60 73v22" stroke="#2674d9" stroke-width="5" stroke-linecap="round"/>
+  </g>
+
+  <!-- stage 2 -->
+  <g transform="translate(248 126)">
+    <rect class="stage-card" width="120" height="120" rx="30"/>
+    <circle cx="60" cy="53" r="31" fill="#e7f8fc"/>
+    <path d="M60 31v10M60 65v10M38 53H28M92 53H82M45 38l-7-7M75 38l7-7M45 68l-7 7M75 68l7 7" fill="none" stroke="#0f89b5" stroke-width="4" stroke-linecap="round"/>
+    <path d="M49 53a11 11 0 1 1 22 0c0 6-4 9-7 12h-8c-3-3-7-6-7-12Z" fill="none" stroke="#0f89b5" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M55 78h10" stroke="#0f89b5" stroke-width="4" stroke-linecap="round"/>
+  </g>
+
+  <!-- stage 3 -->
+  <g transform="translate(428 126)">
+    <rect class="stage-card" width="120" height="120" rx="30"/>
+    <circle cx="60" cy="53" r="31" class="orange-soft"/>
+    <path d="M45 29h25l12 12v39H45V29Z" fill="none" stroke="#f59e0b" stroke-width="5" stroke-linejoin="round"/>
+    <path d="M70 29v13h12M54 53h19M54 65h14" stroke="#f59e0b" stroke-width="4" stroke-linecap="round"/>
+  </g>
+
+  <!-- stage 4 -->
+  <g transform="translate(608 126)">
+    <rect class="stage-card" width="120" height="120" rx="30"/>
+    <circle cx="60" cy="53" r="31" class="red-soft"/>
+    <path d="M50 32c5 16 16 27 33 33l-8 12c-24-8-37-22-45-45l13-8 7 8Z" fill="#d21d1d"/>
+  </g>
+
+  <!-- stage 5 -->
+  <g transform="translate(788 126)">
+    <rect class="stage-card" width="120" height="120" rx="30"/>
+    <circle cx="60" cy="53" r="31" class="green-soft"/>
+    <circle cx="60" cy="43" r="13" fill="#14863a"/>
+    <path d="M35 79c4-18 16-27 25-27s21 9 25 27H35Z" fill="#14863a"/>
+    <path d="M83 72l9 9 20-23" fill="none" stroke="#f5b51b" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- arrows -->
+  <g fill="none" stroke="#c6cbd2" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" opacity=".9">
+    <path d="M199 186h31"/><path d="M222 176l11 10-11 10"/>
+    <path d="M379 186h31"/><path d="M402 176l11 10-11 10"/>
+    <path d="M559 186h31"/><path d="M582 176l11 10-11 10"/>
+    <path d="M739 186h31"/><path d="M762 176l11 10-11 10"/>
+  </g>
+
+  <!-- decorative analytics panel -->
+  <g transform="translate(632 47)" opacity=".95">
+    <rect x="0" y="0" width="150" height="88" rx="20" fill="#fff" stroke="#ededed" filter="url(#softShadow)"/>
+    <rect x="28" y="54" width="14" height="18" rx="3" fill="#6b7280"/>
+    <rect x="53" y="39" width="14" height="33" rx="3" fill="#b61c1c"/>
+    <rect x="78" y="24" width="14" height="48" rx="3" fill="#111"/>
+    <path d="M22 32l29-19 27 14 42-32" fill="none" stroke="#b61c1c" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M114 0l6-5 1 9" fill="none" stroke="#b61c1c" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- floating checklist -->
+  <g transform="translate(160 39)" opacity=".92">
+    <rect width="170" height="94" rx="22" fill="#fff" stroke="#ededed" filter="url(#softShadow)"/>
+    <circle cx="33" cy="32" r="13" fill="#e7f6eb"/>
+    <path d="M27 32l5 5 10-12" fill="none" stroke="#14863a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="58" y="24" width="78" height="8" rx="4" fill="#d7dbe0"/>
+    <circle cx="33" cy="62" r="13" fill="#fff3df"/>
+    <path d="M27 62l5 5 10-12" fill="none" stroke="#f59e0b" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="58" y="54" width="95" height="8" rx="4" fill="#d7dbe0"/>
+  </g>
+</svg>

@@ -56,12 +56,14 @@ def kunden_liste():
     q = request.args.get("q", "").strip()
     sort = request.args.get("sort", "name")
     filter_typ = request.args.get("filter", "alle")
+    phase = request.args.get("phase", "").strip()
     seite = request.args.get("seite", 1, type=int)
 
     order_map = {
         "name": "name",
         "ort": "ort",
         "status": "status",
+        "phase": "status_phase",
         "aufgabe": "aufgabe",
         "faellig": "faellig_am",
     }
@@ -83,6 +85,7 @@ def kunden_liste():
                 funktion,
                 interesse,
                 status,
+                status_phase,
                 aufgabe,
                 aufgabe_erledigt,
                 faellig_am,
@@ -161,6 +164,10 @@ def kunden_liste():
             if k.get("ist_kunde"):
                 continue
 
+        if phase:
+            if k.get("status_phase") != phase:
+                continue
+
         kontakte_liste.append(k)
 
     # Pagination
@@ -233,7 +240,7 @@ def kunden_bearbeiten(kunden_id):
                     (session["user_id"],),
                 ).fetchone()[0]
 
-                neue_nummer = letzte_nummer + 1 if letzte_nummer else 10000
+                neue_nummer = int(letzte_nummer) + 1 if letzte_nummer else 10000
 
                 conn.execute(
                     """

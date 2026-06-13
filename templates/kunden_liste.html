@@ -203,14 +203,33 @@ body{
     background:white;
     color:var(--sam-red);
 }
+.crm-filter-btn{
+    border:2px solid #111;
+    background:#fff;
+    color:#111;
+    font-weight:700;
+    border-radius:12px;
+    padding:.55rem 1rem;
+    transition:all .2s ease;
+}
 
+.crm-filter-btn:hover{
+    background:#111;
+    color:#fff;
+}
+
+.crm-filter-btn.active{
+    background:#111;
+    color:#fff !important;
+    border-color:#111;
+}
 </style>
 
 
 <div class="container mt-4">
 
     <div class="d-flex justify-content-between align-items-center mb-3">
-    <h2>Kontaktliste</h2>
+    
 
     <a href="{{ url_for('kunden.kunden_neu') }}"
        class="btn btn-sam">
@@ -242,19 +261,19 @@ body{
 <div class="d-flex gap-2 flex-wrap mb-4">
 
     <a href="{{ url_for('kunden.kunden_liste', filter='alle', q=request.args.get('q','')) }}"
-       class="btn btn-sm {% if filter_typ == 'alle' %}btn-dark{% else %}btn-outline-dark{% endif %}">
-        Alle
-    </a>
+   class="btn crm-filter-btn {% if filter_typ == 'alle' %}active{% endif %}">
+    Alle
+</a>
 
     <a href="{{ url_for('kunden.kunden_liste', filter='kunden', q=request.args.get('q','')) }}"
-       class="btn btn-sm {% if filter_typ == 'kunden' %}btn-dark{% else %}btn-outline-dark{% endif %}">
-        Aktive Kunden
-    </a>
+   class="btn crm-filter-btn {% if filter_typ == 'kunden' %}active{% endif %}">
+    Aktive Kunden
+</a>
 
     <a href="{{ url_for('kunden.kunden_liste', filter='interessenten', q=request.args.get('q','')) }}"
-       class="btn btn-sm {% if filter_typ == 'interessenten' %}btn-dark{% else %}btn-outline-dark{% endif %}">
-        Interessenten
-    </a>
+   class="btn crm-filter-btn {% if filter_typ == 'interessenten' %}active{% endif %}">
+    Interessenten
+</a>
 
 </div>
 
@@ -327,28 +346,35 @@ body{
 
             </div>
 
-            <div class="row mb-3 crm-section">
+<div class="row mb-3 crm-section">
 
-                <div class="col-md-3">
-                    <strong>Stand</strong><br>
-                    <span class="badge bg-secondary">
-                        {{ k.status[:10] if k.status else "offen" }}
-                    </span>
-                </div>
+    <div class="col-md-2">
+        <strong>Stand</strong><br>
+        <span class="badge bg-secondary">
+            {{ k.status[:10] if k.status else "offen" }}
+        </span>
+    </div>
 
-                <div class="col-md-3">
-                    <strong>Interesse</strong><br>
-                    {{ k.interesse or "-" }}
-                </div>
+    <div class="col-md-2">
+        <strong>Statusphase</strong><br>
+        <span class="badge bg-primary">
+            {{ k.status_phase or "Neu" }}
+        </span>
+    </div>
 
-                <div class="col-md-3">
-                    <strong>Aufgabe</strong><br>
-                    {{ k.aufgabe or "-" }}
-                </div>
+    <div class="col-md-3">
+        <strong>Interesse</strong><br>
+        {{ k.interesse or "-" }}
+    </div>
 
-                <div class="col-md-3">
+    <div class="col-md-3">
+        <strong>Aufgabe</strong><br>
+        {{ k.aufgabe or "-" }}
+    </div>
 
-                    <strong>Fällig</strong><br>
+
+    <div class="col-md-2">
+        <strong>Fällig</strong><br>
 
                     {% if k.faellig_am %}
 

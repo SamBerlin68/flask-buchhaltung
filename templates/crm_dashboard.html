@@ -1,127 +1,685 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container py-5">
 
-  <h1 class="mb-4">🧠 CRM</h1>
+<style>
 
-<div class="row g-4">
+.crm-hero{
+    background:#fff;
+    border-radius:24px;
+    padding:3rem;
+    box-shadow:0 .75rem 2rem rgba(0,0,0,.08);
+    overflow:hidden;
+}
 
-  <div class="col-md-3">
-    <a href="{{ url_for('kunden.kunden_liste', filter='kunden') }}"
-       class="text-decoration-none">
-      <div class="card p-4 text-center h-100 border-success">
-        <h2>{{ kunden }}</h2>
-        <p class="text-success mb-0">Aktive Kunden</p>
-      </div>
-    </a>
-  </div>
+.crm-hero-image{
+    width:100%;
+    max-width:700px;
+    height:auto;
+    display:block;
+    margin:auto;
+}
 
-  <div class="col-md-3">
-    <a href="{{ url_for('kunden.kunden_liste', filter='interessenten') }}"
-       class="text-decoration-none">
-      <div class="card p-4 text-center h-100">
-        <h2>{{ interessenten }}</h2>
-        <p class="text-secondary mb-0">Interessenten</p>
-      </div>
-    </a>
-  </div>
+@media (max-width: 991px){
 
-  <div class="col-md-3">
-    <a href="{{ url_for('kunden.kunden_liste', filter='offen') }}"
-       class="text-decoration-none">
-      <div class="card p-4 text-center h-100 border-warning">
-        <h2>{{ offene_aufgaben }}</h2>
-        <p class="text-warning mb-0">Offene Aufgaben</p>
-      </div>
-    </a>
-  </div>
+    .crm-hero{
+        padding:2rem;
+        text-align:center;
+    }
 
-  <div class="col-md-3">
-    <a href="{{ url_for('kunden.kunden_liste', filter='ueberfaellig') }}"
-       class="text-decoration-none">
+    .crm-hero-image{
+        margin-top:2rem;
+        max-width:100%;
+    }
 
-        <div class="card p-4 text-center h-100 border-danger">
+}
 
-            <h2>{{ ueberfaellige_aufgaben }}</h2>
 
-            <p class="text-danger mb-0">
-                Überfällige Aufgaben
+/* weiterer CSS-Code */
+.kpi-card{
+    border:none;
+    border-radius:18px;
+    overflow:hidden;
+    transition:all .25s ease;
+}
+
+.kpi-card:hover{
+    transform:translateY(-4px);
+}
+
+.kpi-green{
+    border-top:5px solid #198754;
+}
+
+.kpi-blue{
+    border-top:5px solid #0d6efd;
+}
+
+.kpi-dark{
+    border-top:5px solid #212529;
+}
+
+.kpi-red{
+    border-top:5px solid #dc3545;
+}
+.crm-kpi-icon{
+    width:64px;
+    height:64px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin-bottom:1rem;
+    font-size:1.7rem;
+}
+
+.crm-kpi-icon i{
+    color:#fff;
+}
+
+.crm-kpi-green{
+    background:#198754;
+}
+
+.crm-kpi-blue{
+    background:#0d6efd;
+}
+
+.crm-kpi-dark{
+    background:#212529;
+}
+
+.crm-kpi-red{
+    background:#dc3545;
+}
+.crm-kpi-top{
+    display:flex;
+    align-items:center;
+    gap:1rem;
+    margin-bottom:1rem;
+}
+
+.crm-kpi-value{
+    font-size:2.2rem;
+    font-weight:700;
+    line-height:1;
+    color:#212529;
+}
+
+.crm-kpi-title{
+    color:#6c757d;
+    font-weight:500;
+    margin:0;
+}
+
+.crm-kpi-icon{
+    width:72px;
+    height:72px;
+}
+
+.task-card{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:1rem 1.25rem;
+    border-radius:16px;
+    margin-bottom:.75rem;
+    background:#fff;
+    border:1px solid #ececec;
+    transition:all .2s ease;
+    text-decoration:none;
+    color:inherit;
+}
+
+.task-card:hover{
+    transform:translateY(-2px);
+    box-shadow:0 .5rem 1rem rgba(0,0,0,.08);
+    color:inherit;
+}
+
+.task-info strong{
+    display:block;
+    font-size:1rem;
+}
+
+.task-info span{
+    color:#6c757d;
+    font-size:.9rem;
+}
+
+.task-date{
+    text-align:right;
+}
+
+.task-date .badge{
+    font-size:.85rem;
+    padding:.5rem .75rem;
+}
+.task-card{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:1.25rem 1.5rem;
+    border-radius:18px;
+    margin-bottom:1rem;
+    background:#fff;
+    border:1px solid #ececec;
+    transition:.2s;
+    text-decoration:none;
+    color:inherit;
+}
+
+.task-card:hover{
+    transform:translateY(-3px);
+    box-shadow:0 .5rem 1rem rgba(0,0,0,.08);
+}
+
+.task-left{
+    display:flex;
+    align-items:center;
+    gap:1rem;
+}
+
+.task-icon{
+    width:52px;
+    height:52px;
+    border-radius:50%;
+    background:#212529;
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:1.2rem;
+}
+
+.task-title{
+    font-weight:600;
+    margin-bottom:.25rem;
+}
+
+.task-subtitle{
+    color:#6c757d;
+    font-size:.9rem;
+}
+.task-tags{
+    display:flex;
+    gap:.5rem;
+    margin-top:.5rem;
+    flex-wrap:wrap;
+}
+
+.task-tag{
+    background:#f8f9fa;
+    border:1px solid #e9ecef;
+    border-radius:999px;
+    padding:.25rem .75rem;
+    font-size:.75rem;
+    font-weight:500;
+    color:#495057;
+}
+.task-right{
+    text-align:right;
+}
+
+.task-link{
+    display:block;
+    margin-top:.5rem;
+    font-size:.85rem;
+    color:#dc3545;
+}
+.task-tags{
+    display:flex;
+    gap:.5rem;
+    margin-top:.5rem;
+    flex-wrap:wrap;
+}
+
+.task-tag{
+    background:#f5f5f5;
+    border-radius:999px;
+    padding:.25rem .6rem;
+    font-size:.75rem;
+    color:#555;
+}
+.pipeline-stage{
+    background:#fff;
+    border-radius:18px;
+    padding:1.25rem;
+    border:1px solid #ececec;
+    transition:.2s;
+    min-height:140px;
+}
+
+.pipeline-stage:hover{
+    transform:translateY(-3px);
+    box-shadow:0 .5rem 1rem rgba(0,0,0,.08);
+}
+
+.pipeline-icon{
+    width:54px;
+    height:54px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin:0 auto .75rem auto;
+    color:#fff;
+    font-size:1.3rem;
+}
+
+.pipeline-stage h3{
+    font-size:1.8rem;
+    font-weight:700;
+    margin-bottom:.25rem;
+}
+
+.pipeline-stage small{
+    color:#6c757d;
+}
+.pipeline-neu{
+    background:#6c757d;
+}
+
+.pipeline-interesse{
+    background:#0d6efd;
+}
+
+.pipeline-angebot{
+    background:#f59e0b;
+}
+
+.pipeline-nachfassen{
+    background:#dc3545;
+}
+
+.pipeline-vertrag{
+    background:#212529;
+}
+
+.pipeline-kunde{
+    background:#198754;
+}
+</style>
+
+<div class="crm-hero mb-5">
+
+    <div class="row align-items-center">
+
+        <div class="col-lg-5">
+
+            <h1 class="display-4 fw-bold mb-3">
+                Kundenverwaltung
+            </h1>
+
+            <p class="lead text-muted mb-4">
+                Behalte Kontakte, Angebote, Aufgaben und Kunden
+                an einem Ort im Blick.
             </p>
+
+            <a href="{{ url_for('kunden.kunden_neu') }}"
+               class="btn btn-dark btn-lg">
+                ➕ Neuer Kontakt
+            </a>
 
         </div>
 
-    </a>
+        <div class="col-lg-7 text-center">
+
+            <img
+                src="{{ url_for('static', filename='img/crm/hero-crm.svg') }}"
+                class="crm-hero-image"
+                alt="CRM Workflow">
+
+        </div>
+
+    </div>
+
 </div>
 
+  
+
+
+
+  <div class="row g-4 mb-5">
+
+    <div class="col-lg-3">
+
+        <a href="{{ url_for('kunden.kunden_liste', filter='kunden') }}"
+   class="text-decoration-none text-dark">
+
+<div class="card kpi-card kpi-green shadow-sm h-100">
+            <div class="card-body">
+
+    <div class="crm-kpi-top">
+
+        <div class="crm-kpi-icon crm-kpi-green">
+            <i class="ti ti-user-check"></i>
+        </div>
+
+        <div class="crm-kpi-value">
+            {{ kunden }}
+        </div>
+
+    </div>
+
+    <p class="crm-kpi-title">
+        Aktive Kunden
+    </p>
+
+</div>
+        </div>
+</a>
+
+    </div>
+
+
+    <div class="col-lg-3">
+
+        <div class="card kpi-card kpi-blue shadow-sm h-100">
+            <div class="card-body">
+              <div class="crm-kpi-top">
+                <div class="crm-kpi-icon crm-kpi-blue">
+                  <i class="ti ti-user-search"></i>
+                </div>
+
+                <div class="crm-kpi-value">
+                    {{ interessenten }}
+                </div>
+                </div>
+                <p class="text-muted mb-0">
+                    Interessenten
+                </p>
+
+            </div>
+        </div>
+
+    </div>
+
+    <div class="col-lg-3">
+
+        <div class="card kpi-card kpi-dark shadow-sm h-100">
+            <div class="card-body">
+              <div class="crm-kpi-top">
+                <div class="crm-kpi-icon crm-kpi-dark">
+                   <i class="ti ti-clipboard-list"></i>
+                </div>
+
+                <div class="crm-kpi-value">
+                    {{ offene_aufgaben }}
+                </div>
+                </div>
+                <p class="text-muted mb-0">
+                    Offene Aufgaben
+                </p>
+
+            </div>
+        </div>
+
+    </div>
+
+    <div class="col-lg-3">
+
+        <div class="card kpi-card kpi-red shadow-sm h-100">
+            <div class="card-body">
+              <div class="crm-kpi-top">
+                <div class="crm-kpi-icon crm-kpi-red">
+                  <i class="ti ti-clock-exclamation"></i>
+                </div>
+
+                <div class="crm-kpi-value">
+                    {{ ueberfaellige_aufgaben }}
+                </div>
+                </div>
+                <p class="text-muted mb-0">
+                    Überfällig
+                </p>
+
+            </div>
+        </div>
+
+    </div>
+
+
 </div>
 
-  <div class="row mt-4 g-3">
+<div class="card border-0 shadow-sm mb-5">
 
-    <div class="col-md-6">
-      <a href="{{ url_for('crm.newsletter_liste') }}"
-         class="btn btn-outline-warning w-100">
-        📬 Newsletterliste
-      </a>
+    <div class="card-body p-4">
+
+        <h5 class="fw-bold mb-4">
+            Vertriebspipeline
+        </h5>
+
+        <div class="row text-center align-items-center">
+
+            <div class="col">
+                <a href="{{ url_for('kunden.kunden_liste', phase='Neu') }}"
+                   class="text-decoration-none text-dark">
+
+                    <div class="pipeline-stage">
+
+    <div class="pipeline-icon pipeline-neu">
+        <i class="ti ti-user-plus"></i>
     </div>
 
-    <div class="col-md-6">
-      <a href="{{ url_for('kunden.kunden_liste') }}"
-         class="btn btn-outline-light w-100">
-        📇 Kontakte verwalten
-      </a>
+    <h3>{{ neu }}</h3>
+
+    <small>Neu</small>
+
+</div>
+
+                </a>
+            </div>
+
+            <div class="col-auto fs-4 text-muted">→</div>
+
+            <div class="col">
+                <a href="{{ url_for('kunden.kunden_liste', phase='Interesse') }}"
+                   class="text-decoration-none text-dark">
+
+                    <div class="pipeline-stage">
+
+    <div class="pipeline-icon pipeline-interesse">
+        <i class="ti ti-bulb"></i>
     </div>
 
-    <div class="col-md-6">
-      <a href="{{ url_for('kunden.kunden_liste') }}"
-         class="btn btn-success w-100">
-        🧑‍💼 Kundenliste
-      </a>
+    <h3>{{ interesse }}</h3>
+
+    <small>Interesse</small>
+
+</div>
+
+                </a>
+            </div>
+
+            <div class="col-auto fs-4 text-muted">→</div>
+
+            <div class="col">
+                <a href="{{ url_for('kunden.kunden_liste', phase='Angebot versendet') }}"
+                   class="text-decoration-none text-dark">
+
+                    <div class="pipeline-stage">
+
+    <div class="pipeline-icon pipeline-angebot">
+        <i class="ti ti-file-text"></i>
     </div>
 
-  </div>
+    <h3>{{ angebot }}</h3>
+
+    <small>Angebot</small>
+
+</div>
+
+                </a>
+            </div>
+
+            <div class="col-auto fs-4 text-muted">→</div>
+
+            <div class="col">
+                <a href="{{ url_for('kunden.kunden_liste', phase='Nachfassen') }}"
+                   class="text-decoration-none text-dark">
+
+                    <div class="pipeline-stage">
+
+    <div class="pipeline-icon pipeline-nachfassen">
+        <i class="ti ti-phone"></i>
+    </div>
+
+    <h3>{{ nachfassen }}</h3>
+
+    <small>Nachfassen</small>
+
+</div>
+
+                </a>
+            </div>
+
+            <div class="col-auto fs-4 text-muted">→</div>
+
+            <div class="col">
+                <a href="{{ url_for('kunden.kunden_liste', phase='Vertrag versendet') }}"
+
+
+                   class="text-decoration-none text-dark">
+
+                    <div class="pipeline-stage">
+
+    <div class="pipeline-icon pipeline-vertrag">
+        <i class="ti ti-pencil"></i>
+    </div>
+
+    <h3>{{ vertrag }}</h3>
+
+    <small>Vertrag</small>
+
+</div>
+
+                </a>
+            </div>
+
+            <div class="col-auto fs-4 text-muted">→</div>
+
+            <div class="col">
+                <a href="{{ url_for('kunden.kunden_liste', filter='kunden') }}"
+                   class="text-decoration-none text-dark">
+
+                    <div class="pipeline-stage">
+
+    <div class="pipeline-icon pipeline-kunde">
+        <i class="ti ti-user-check"></i>
+    </div>
+
+    <h3>{{ kunden }}</h3>
+
+    <small>Kunde</small>
+
+</div>
+
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+  
 <div class="card mt-5">
   <div class="card-header">
-    <h4 class="mb-0">🔴 Meine nächsten Aufgaben</h4>
+    <h4 class="fw-bold mb-0">
+    <i class="ti ti-checklist me-2"></i>
+    Nächste Aufgaben
+</h4>
   </div>
 
   <div class="card-body">
 
     {% if naechste_aufgaben %}
 
-      <div class="list-group">
+      {% for a in naechste_aufgaben %}
 
-        {% for a in naechste_aufgaben %}
+<a href="{{ url_for('kunden.kunden_bearbeiten', kunden_id=a.id) }}"
+   class="task-card">
 
-          <a href="{{ url_for('kunden.kunden_bearbeiten', kunden_id=a.id) }}"
-             class="list-group-item list-group-item-action">
+    <div class="task-left">
 
-            <strong>{{ a.name }}</strong><br>
+        <div class="task-icon">
+            <i class="ti ti-checklist"></i>
+        </div>
 
-            {{ a.aufgabe }}
+        <div>
 
-            {% if a.faellig_am %}
-              <br>
-              <small class="text-danger">
-                fällig am {{ a.faellig_am }}
-              </small>
-            {% endif %}
+            <div class="task-title">
+                {{ a.name }}
+            </div>
 
-          </a>
+            <div class="task-subtitle">
+    <strong>Aufgabe:</strong> {{ a.aufgabe }}
+</div>
 
-        {% endfor %}
+<div class="task-tags">
 
-      </div>
-
-    {% else %}
-
-      <p class="text-muted mb-0">
-        Keine offenen Aufgaben vorhanden.
-      </p>
-
+    {% if a.status_phase %}
+        <span class="task-tag">
+            {{ a.status_phase }}
+        </span>
     {% endif %}
 
-  </div>
+    {% if a.faellig_am %}
+        <span class="task-tag">
+            Fällig: {{ a.faellig_am }}
+        </span>
+    {% endif %}
+
+</div>
+<div class="task-tags">
+
+    {% if a.aufgabe %}
+        <span class="task-tag">
+            {{ a.aufgabe }}
+        </span>
+    {% endif %}
+
+    {% if a.status_phase %}
+        <span class="task-tag">
+            {{ a.status_phase }}
+        </span>
+    {% endif %}
+
+</div>
+        </div>
+
+    </div>
+
+    <div class="task-right">
+
+        {% if a.faellig_am %}
+            <span class="badge bg-danger">
+                {{ a.faellig_am }}
+            </span>
+        {% else %}
+            <span class="badge bg-secondary">
+                Offen
+            </span>
+        {% endif %}
+
+        <span class="task-link">
+            Bearbeiten →
+        </span>
+
+    </div>
+
+</a>
+
+{% endfor %}
+{% else %}
+
+<p class="text-muted mb-0">
+    Keine offenen Aufgaben vorhanden.
+</p>
+
+{% endif %}
 </div>
 </div>
 {% endblock %}
